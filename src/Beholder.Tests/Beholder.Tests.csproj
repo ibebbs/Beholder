@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Face\Detector\faces.jpg" />
+    <None Remove="Persistence\Provider\face.jpg" />
+    <None Remove="Snapshot\Provider\coyote01.wav" />
+    <None Remove="Snapshot\Provider\image.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Face\Detector\faces.jpg" />
+    <EmbeddedResource Include="Persistence\Provider\face.jpg" />
+    <EmbeddedResource Include="Snapshot\Provider\coyote01.wav" />
+    <EmbeddedResource Include="Snapshot\Provider\image.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FakeItEasy" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.3" />
+    <PackageReference Include="nunit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="RichardSzalay.MockHttp" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Beholder\Beholder.csproj" />
+  </ItemGroup>
+
+</Project>

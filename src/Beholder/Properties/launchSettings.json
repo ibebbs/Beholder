@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Beholder": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Beholder:Snapshot:SnapshotUri": "http://192.168.2.105/tmpfs/snap.jpg?usr=admin&pwd=admin"
+      }
+    }
+  }
+}
