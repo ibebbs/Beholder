@@ -32,14 +32,16 @@ namespace Beholder.Face.Detector
 
         public Task<IEnumerable<Bitmap>> ExtractFaces(Bitmap source)
         {
-            var dlibImage = source.ToArray2D<RgbPixel>();
+            using (var dlibImage = source.ToArray2D<RgbPixel>())
+            {
 
-            var faces = _faceDetector
-                .Operator(dlibImage)
-                .Select(face => ExtractFace(face, source))
-                .ToArray();
+                var faces = _faceDetector
+                    .Operator(dlibImage)
+                    .Select(face => ExtractFace(face, source))
+                    .ToArray();
 
-            return Task.FromResult<IEnumerable<Bitmap>>(faces);
+                return Task.FromResult<IEnumerable<Bitmap>>(faces);
+            }
         }
     }
 }
