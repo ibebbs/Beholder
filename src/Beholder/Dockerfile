@@ -1,7 +1,5 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/core/runtime:3.1-buster-slim AS base
-# install package to build
+# install DlibDotNetNative dependencies
 RUN apt-get update && apt-get install -y \
     libopenblas-dev \
     liblapack-dev \
