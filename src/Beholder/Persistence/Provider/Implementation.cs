@@ -18,14 +18,12 @@ namespace Beholder.Persistence.Provider
             _logger = logger;
         }
 
-        private async Task<Uri> SaveFace(IImage image)
+        private async Task<Uri> SaveImage(string container, string fileName, IImage image)
         {
-            var client = new BlobContainerClient(_options.Value.ConnectionString, _options.Value.UnknownFaceContainer);
+            var client = new BlobContainerClient(_options.Value.ConnectionString, container);
 
             using (MemoryStream stream = new MemoryStream(image.Data))
             {
-                var id = Guid.NewGuid().ToString();
-                var fileName = $"{id}.png";
 
                 _logger.LogInformation(0, "Persisting file {0}", fileName);
 
@@ -39,11 +37,20 @@ namespace Beholder.Persistence.Provider
             }
         }
 
-        public async Task<IPersistedRecognition> SaveRecognition(IRecognition recognition)
+        public Task<Uri> SaveRecognised(string name, IImage image)
         {
-            var uri = await SaveFace(recognition);
+            var id = Guid.NewGuid().ToString();
+            var fileName = $"{name}/{id}.png";
 
-            return new PersistedRecognition(recognition.Data, recognition.Tags, uri.ToString());
+            return SaveImage(_options.Value.RecognisedFaceContainer, fileName, image);
+        }
+
+        public Task<Uri> SaveUnrecognised(IImage image)
+        {
+            var id = Guid.NewGuid().ToString();
+            var fileName = $"{id}.png";
+
+            return SaveImage(_options.Value.UnrecognisedFaceContainer, fileName, image);
         }
     }
 }

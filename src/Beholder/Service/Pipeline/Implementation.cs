@@ -4,6 +4,7 @@ using Microsoft.ML.Data;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -18,16 +19,36 @@ namespace Beholder.Service.Pipeline
     public class Implementation : IPipeline
     {
         private readonly IFunctions _functions;
+        private readonly IOptions<Configuration> _options;
         private readonly ILogger<Implementation> _logger;
         private readonly ITargetBlock<string> _entryPoint;
         private readonly Task _completion;
 
-        public Implementation(IFunctions functions, ILogger<Implementation> logger)
+        public Implementation(IFunctions functions, IOptions<Configuration> options, ILogger<Implementation> logger)
         {
             _functions = functions;
+            _options = options;
             _logger = logger;
 
             (_entryPoint, _completion) = CreatePipeline();
+        }
+
+        private async Task<IPersisted> PersisRecognition(IRecognition recognition)
+        {
+            var tag = recognition.Tags.OrderByDescending(tag => tag.Confidence).FirstOrDefault();
+
+            if (tag != null && tag.Confidence >= _options.Value.RecognitionConfidence)
+            {
+                var uri = await _functions.PersistRecognised(tag.Name, recognition);
+
+                return new PersistedRecognition(tag.Name, tag.Confidence, uri.ToString());
+            }
+            else
+            {
+                var uri = await _functions.PersistUnrecognised(recognition);
+
+                return new Persisted(uri.ToString());
+            }            
         }
 
         private (ITargetBlock<string>, Task) CreatePipeline()
@@ -37,8 +58,8 @@ namespace Beholder.Service.Pipeline
             TransformManyBlock<object, IImage> fetchBlock = new TransformManyBlock<object, IImage>(_ => _functions.Fetch(), new ExecutionDataflowBlockOptions { BoundedCapacity = 2, MaxDegreeOfParallelism = 1 });
             TransformManyBlock<IImage, IImage> detectFacesBlock = new TransformManyBlock<IImage, IImage>(source => _functions.ExtractFaces(source));
             TransformManyBlock<IImage, IRecognition> recogniseFacesBlock = new TransformManyBlock<IImage, IRecognition>(source => _functions.RecogniseFaces(source));
-            TransformBlock<IRecognition, IPersistedRecognition> persistRecognitionBlock = new TransformBlock<IRecognition, IPersistedRecognition>(source => _functions.PersistRecognition(source), new ExecutionDataflowBlockOptions { BoundedCapacity = 10, MaxDegreeOfParallelism = 1 });
-            ActionBlock<IPersistedRecognition> notifyRecognitionBlock = new ActionBlock<IPersistedRecognition>(recognition => _functions.NotifyRecognition(recognition), new ExecutionDataflowBlockOptions { BoundedCapacity = 10, MaxDegreeOfParallelism = 1 });
+            TransformBlock<IRecognition, IPersisted> persistRecognitionBlock = new TransformBlock<IRecognition, IPersisted>(recognition => PersisRecognition(recognition), new ExecutionDataflowBlockOptions { BoundedCapacity = 10, MaxDegreeOfParallelism = 1 });
+            ActionBlock<IPersisted> notifyRecognitionBlock = new ActionBlock<IPersisted>(recognition => _functions.NotifyRecognition(recognition), new ExecutionDataflowBlockOptions { BoundedCapacity = 10, MaxDegreeOfParallelism = 1 });
 
             fetchBlock.LinkTo(detectFacesBlock, linkOptions);
             detectFacesBlock.LinkTo(recogniseFacesBlock, linkOptions);

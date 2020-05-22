@@ -12,7 +12,7 @@ namespace Beholder.Tests.Persistence.Provider
         private static readonly Beholder.Persistence.Configuration Configuration = new Beholder.Persistence.Configuration
         {
             ConnectionString = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;",
-            UnknownFaceContainer = "test"
+            UnrecognisedFaceContainer = "test"
         };
 
         private Beholder.Persistence.Provider.Implementation CreateSubject()
@@ -34,9 +34,9 @@ namespace Beholder.Tests.Persistence.Provider
                 .ConfigureFake(fake => A.CallTo(() => fake.Data).ReturnsLazily(call => Helper.GetManifestResourceByteArray("Beholder.Tests.Face.Detector.faces.jpg"))
             ));
 
-            var persistedRecognition = await subject.SaveRecognition(recognition);
+            var uri = await subject.SaveRecognised("test", recognition);
 
-            Assert.That(persistedRecognition.ImageUri, Is.Not.Empty);
+            Assert.That(uri.ToString(), Is.Not.Empty);
         }
     }
 }

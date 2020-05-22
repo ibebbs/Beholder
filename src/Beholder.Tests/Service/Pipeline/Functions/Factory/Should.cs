@@ -46,16 +46,29 @@ namespace Beholder.Tests.Service.Pipeline.Functions.Factory
         }
 
         [Test]
-        public async Task UseThePersistenceProviderToSaveRecognition()
+        public async Task UseThePersistenceProviderToSaveRecognised()
         {
             (var snapshotProvider, var faceDetector, var persistenceProvider, var logger, var subject) = CreateSubject();
 
             var functions = await subject.Create(logger);
 
-            var recognition = A.Fake<IRecognition>();
-            await functions.PersistRecognition(recognition);
+            var image = A.Fake<IImage>();
+            await functions.PersistRecognised("test", image);
 
-            A.CallTo(() => persistenceProvider.SaveRecognition(recognition)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistenceProvider.SaveRecognised("test", image)).MustHaveHappenedOnceExactly();
+        }
+
+        [Test]
+        public async Task UseThePersistenceProviderToSaveUnrecognised()
+        {
+            (var snapshotProvider, var faceDetector, var persistenceProvider, var logger, var subject) = CreateSubject();
+
+            var functions = await subject.Create(logger);
+
+            var image = A.Fake<IImage>();
+            await functions.PersistUnrecognised(image);
+
+            A.CallTo(() => persistenceProvider.SaveUnrecognised(image)).MustHaveHappenedOnceExactly();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Beholder.Tests
         private static readonly Dictionary<string, string> Configuration = new Dictionary<string, string>
         {
             { "Snapshot:SnapshotUri", "http://ipcam.local/cgi?snapshot" },
-            { "Face:Recognizer:ModelUri", "http://192.168.1.24:10000/devstoreaccount1/model/Model.zip" }
+            { "Face:Recognizer:ModelUri", "http://azurite.local:10000/devstoreaccount1/model/Model.zip" }
         };
 
         [Test, TestCaseSource(nameof(ServiceTests))]
@@ -45,7 +45,7 @@ namespace Beholder.Tests
             };
 
             var serviceProvider = Beholder.Program
-                .ConfigureServices(hostContext, new ServiceCollection())
+                .ConfigureServices(hostContext, new ServiceCollection(), false)
                 .BuildServiceProvider();
 
             var service = serviceProvider.GetService(serviceType);

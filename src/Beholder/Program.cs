@@ -19,10 +19,17 @@ namespace Beholder
             return configuration.ModelUri;
         }
 
-        public static IServiceCollection ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
+        public static IServiceCollection ConfigureServices(HostBuilderContext hostContext, IServiceCollection services, bool loadModel = true)
         {
-            services.AddPredictionEnginePool<Face.Recognizer.InputModel, Face.Recognizer.OutputModel>()
-                .FromUri(FaceRecognizerModelUri(hostContext), TimeSpan.FromHours(1));
+            if (loadModel)
+            {
+                services.AddPredictionEnginePool<Face.Recognizer.InputModel, Face.Recognizer.OutputModel>()
+                    .FromUri(FaceRecognizerModelUri(hostContext), TimeSpan.FromHours(1));
+            }
+            else
+            {
+                services.AddPredictionEnginePool<Face.Recognizer.InputModel, Face.Recognizer.OutputModel>();
+            }
 
             services.AddOptions<Face.Recognizer.Configuration>().ValidateDataAnnotations().Bind(hostContext.Configuration.GetSection("Face:Recognizer"));
             services.AddSingleton<Face.IRecognizer, Face.Recognizer.Implementation>();
@@ -64,7 +71,7 @@ namespace Beholder
                 await builder
                     .UseConsoleLifetime()
                     .Build()
-                    .ValidateConfiguration<Service.Configuration, Snapshot.Configuration, Persistence.Configuration>()
+                    .ValidateConfiguration<Service.Configuration, Snapshot.Configuration, Persistence.Configuration, Face.Recognizer.Configuration>()
                     .RunAsync();
             }
             catch (ConfigurationValidationException e)

@@ -21,7 +21,8 @@ namespace Beholder.Tests.Service.Pipeline.Functions
                 fake.Fetch,
                 fake.ExtractFaces,
                 fake.RecogniseFaces,
-                fake.PersistRecognition,
+                fake.PersistRecognised,
+                fake.PersistUnrecognised,
                 fake.NotifyRecognition
             );
 
@@ -51,15 +52,27 @@ namespace Beholder.Tests.Service.Pipeline.Functions
         }
 
         [Test]
-        public void InvokeThePersistFacesFunctionWhenExtractFacesIsCalled()
+        public void InvokeThePersistRecognisedFunctionWhenPersistRecognisedIsCalled()
         {
             (var fake, var subject) = CreateSubject();
 
-            var recognition = A.Fake<IRecognition>();
+            var image = A.Fake<IImage>();
 
-            subject.PersistRecognition(recognition);
+            subject.PersistRecognised("test", image);
 
-            A.CallTo(() => fake.PersistRecognition(recognition)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fake.PersistRecognised("test", image)).MustHaveHappenedOnceExactly();
+        }
+
+        [Test]
+        public void InvokeThePersistUnrecognisedFunctionWhenPersistUnrecognisedIsCalled()
+        {
+            (var fake, var subject) = CreateSubject();
+
+            var image = A.Fake<IImage>();
+
+            subject.PersistUnrecognised(image);
+
+            A.CallTo(() => fake.PersistUnrecognised(image)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
@@ -72,18 +85,6 @@ namespace Beholder.Tests.Service.Pipeline.Functions
             subject.RecogniseFaces(image);
 
             A.CallTo(() => fake.RecogniseFaces(image)).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
-        public void InvokeThePersistFacialRecognitionFunctionWhenPersistFacialRecognitionIsCalled()
-        {
-            (var fake, var subject) = CreateSubject();
-
-            var recognition = A.Fake<IRecognition>();
-
-            subject.PersistRecognition(recognition);
-
-            A.CallTo(() => fake.PersistRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
 
         [Test]

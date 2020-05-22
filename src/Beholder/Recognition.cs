@@ -20,9 +20,16 @@ namespace Beholder
         IEnumerable<Tag> Tags { get; }
     }
 
-    public interface IPersistedRecognition : IRecognition
+    public interface IPersisted
     {
         public string ImageUri { get; }
+    }
+
+    public interface IPersistedRecognition : IPersisted
+    {
+        public string Name { get; }
+
+        public float Confidence { get; }
     }
 
     public class Recognition : Image, IRecognition
@@ -35,12 +42,28 @@ namespace Beholder
         public IEnumerable<Tag> Tags { get; }
     }
 
-    public class PersistedRecognition : Recognition, IPersistedRecognition
+    public class Persisted : IPersisted
     {
-        public PersistedRecognition(byte[] buffer, IEnumerable<Tag> tags, string imageUri) : base(buffer, tags)
+        public Persisted(string imageUri)
         {
             ImageUri = imageUri;
         }
+
+        public string ImageUri { get; }
+    }
+
+    public class PersistedRecognition : IPersistedRecognition
+    {
+        public PersistedRecognition(string name, float confidence, string imageUri)
+        {
+            Name = name;
+            Confidence = confidence;
+            ImageUri = imageUri;
+        }
+
+        public string Name { get; }
+
+        public float Confidence { get; }
 
         public string ImageUri { get; }
     }

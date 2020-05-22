@@ -12,21 +12,24 @@ namespace Beholder.Service.Pipeline.Functions
         private readonly Func<Task<IEnumerable<IImage>>> _fetch;
         private readonly Func<IImage, Task<IEnumerable<IImage>>> _extractFaces;
         private readonly Func<IImage, Task<IEnumerable<IRecognition>>> _recogniseFaces;
-        private readonly Func<IRecognition, Task<IPersistedRecognition>> _persistFace;
-        private readonly Func<IPersistedRecognition, Task> _notifyRecognition;
+        private readonly Func<string, IImage, Task<Uri>> _persistRecognised;
+        private readonly Func<IImage, Task<Uri>> _persistUnrecognised;
+        private readonly Func<IPersisted, Task> _notifyPersisted;
 
         public Implementation(
             Func<Task<IEnumerable<IImage>>> fetch,
             Func<IImage, Task<IEnumerable<IImage>>> extractFaces,
             Func<IImage, Task<IEnumerable<IRecognition>>> recogniseFaces,
-            Func<IRecognition, Task<IPersistedRecognition>> persistFace,
-            Func<IPersistedRecognition, Task> notifyFacialRecognition)
+            Func<string, IImage, Task<Uri>> persistRecognised,
+            Func<IImage, Task<Uri>> persistUnrecognised,
+            Func<IPersisted, Task> notifyPersisted)
         {
             _fetch = fetch;
             _extractFaces = extractFaces;
-            _persistFace = persistFace;
+            _persistRecognised = persistRecognised;
+            _persistUnrecognised = persistUnrecognised;
             _recogniseFaces = recogniseFaces;
-            _notifyRecognition = notifyFacialRecognition;
+            _notifyPersisted = notifyPersisted;
         }
 
         public Task<IEnumerable<IImage>> Fetch()
@@ -44,14 +47,19 @@ namespace Beholder.Service.Pipeline.Functions
             return _recogniseFaces(image);
         }
 
-        public Task<IPersistedRecognition> PersistRecognition(IRecognition image)
+        public Task<Uri> PersistRecognised(string name, IImage image)
         {
-            return _persistFace(image);
+            return _persistRecognised(name, image);
         }
 
-        public Task NotifyRecognition(IPersistedRecognition recognition)
+        public Task<Uri> PersistUnrecognised(IImage image)
         {
-            return _notifyRecognition(recognition);
+            return _persistUnrecognised(image);
+        }
+
+        public Task NotifyRecognition(IPersisted persisted)
+        {
+            return _notifyPersisted(persisted);
         }
     }
 }

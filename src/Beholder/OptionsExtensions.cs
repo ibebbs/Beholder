@@ -70,5 +70,21 @@ namespace Beholder
 
             return host;
         }
+
+        public static IHost ValidateConfiguration<T1, T2, T3, T4>(this IHost host)
+            where T1 : class, new()
+            where T2 : class, new()
+            where T3 : class, new()
+            where T4 : class, new()
+        {
+            var value1 = Fallible.Operation(() => host.Services.GetService<IOptions<T1>>().Value);
+            var value2 = Fallible.Operation(() => host.Services.GetService<IOptions<T2>>().Value);
+            var value3 = Fallible.Operation(() => host.Services.GetService<IOptions<T3>>().Value);
+            var value4 = Fallible.Operation(() => host.Services.GetService<IOptions<T4>>().Value);
+
+            ThrowOnError(value1, value2, value3, value4);
+
+            return host;
+        }
     }
 }
