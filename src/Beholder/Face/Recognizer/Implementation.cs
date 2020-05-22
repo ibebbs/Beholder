@@ -1,8 +1,4 @@
-﻿using Bebbs.Monads;
-using Microsoft.Extensions.ML;
-using Microsoft.ML;
-using System;
-using System.Drawing;
+﻿using Microsoft.Extensions.ML;
 using System.Linq;
 
 namespace Beholder.Face.Recognizer
