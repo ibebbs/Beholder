@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using FakeItEasy;
+using Microsoft.Extensions.Logging;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,7 +15,8 @@ namespace Beholder.Tests.Face.Detector
     {
         private Beholder.Face.Detector.Implementation CreateSubject()
         {
-            return new Beholder.Face.Detector.Implementation();
+            var logger = A.Fake<ILogger<Beholder.Face.Detector.Implementation>>();
+            return new Beholder.Face.Detector.Implementation(logger);
         }
 
         [Test]

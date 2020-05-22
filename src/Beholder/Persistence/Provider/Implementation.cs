@@ -24,7 +24,7 @@ namespace Beholder.Persistence.Provider
 
         public async Task<string> SaveFace(IImage image)
         {
-            var client = new BlobContainerClient(_options.Value.ConnectionString, _options.Value.FaceContainer);
+            var client = new BlobContainerClient(_options.Value.ConnectionString, _options.Value.UnknownFaceContainer);
 
             using (MemoryStream stream = new MemoryStream())
             {

@@ -1,5 +1,6 @@
 ﻿using DlibDotNet;
 using DlibDotNet.Extensions;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -11,11 +12,13 @@ namespace Beholder.Face.Detector
 {
     public class Implementation : IDetector
     {
-        private FrontalFaceDetector _faceDetector;
+        private readonly FrontalFaceDetector _faceDetector;
+        private readonly ILogger<Implementation> _logger;
 
-        public Implementation()
+        public Implementation(ILogger<Implementation> logger)
         {
             _faceDetector = Dlib.GetFrontalFaceDetector();
+            _logger = logger;
         }
 
         private static Bitmap ExtractFace(Rect face, Bitmap source)
@@ -34,11 +37,12 @@ namespace Beholder.Face.Detector
         {
             using (var dlibImage = source.ToArray2D<RgbPixel>())
             {
-
-                var faces = _faceDetector
+                var faces = _faceDetector 
                     .Operator(dlibImage)
                     .Select(face => ExtractFace(face, source))
                     .ToArray();
+
+                _logger.LogInformation("Found {0} faces", faces.Length);
 
                 return Task.FromResult<IEnumerable<Bitmap>>(faces);
             }
