@@ -1,10 +1,19 @@
 ﻿using System;
-using System.Drawing;
 
 namespace Beholder
 {
-    public interface IImage : IDisposable
+    public interface IImage
     {
-        Bitmap Bitmap { get; }
+        byte[] Data { get; }
+    }
+
+    public class Image : IImage 
+    {
+        public Image(byte[] data)
+        {
+            Data = data;
+        }
+
+        public byte[] Data { get; }
     }
 }

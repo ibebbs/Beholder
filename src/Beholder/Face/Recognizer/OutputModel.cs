@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Beholder.Face.Recognizer
+﻿namespace Beholder.Face.Recognizer
 {
-    class OutputModel
+    public class OutputModel
     {
+        public string PredictedLabel;
+
+        public float[] Score;
     }
 }

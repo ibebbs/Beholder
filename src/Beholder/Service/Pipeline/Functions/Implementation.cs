@@ -11,25 +11,22 @@ namespace Beholder.Service.Pipeline.Functions
     {
         private readonly Func<Task<IEnumerable<IImage>>> _fetch;
         private readonly Func<IImage, Task<IEnumerable<IImage>>> _extractFaces;
-        private readonly Func<IImage, Task> _persistFace;
         private readonly Func<IImage, Task<IEnumerable<IRecognition>>> _recogniseFaces;
-        private readonly Func<IRecognition, Task> _persistFacialRecognition;
-        private readonly Func<IRecognition, Task> _notifyFacialRecognition;
+        private readonly Func<IRecognition, Task<IPersistedRecognition>> _persistFace;
+        private readonly Func<IPersistedRecognition, Task> _notifyRecognition;
 
         public Implementation(
             Func<Task<IEnumerable<IImage>>> fetch,
             Func<IImage, Task<IEnumerable<IImage>>> extractFaces,
-            Func<IImage, Task> persistFace,
             Func<IImage, Task<IEnumerable<IRecognition>>> recogniseFaces,
-            Func<IRecognition, Task> persistFacialRecognition,
-            Func<IRecognition, Task> notifyFacialRecognition)
+            Func<IRecognition, Task<IPersistedRecognition>> persistFace,
+            Func<IPersistedRecognition, Task> notifyFacialRecognition)
         {
             _fetch = fetch;
             _extractFaces = extractFaces;
             _persistFace = persistFace;
             _recogniseFaces = recogniseFaces;
-            _persistFacialRecognition = persistFacialRecognition;
-            _notifyFacialRecognition = notifyFacialRecognition;
+            _notifyRecognition = notifyFacialRecognition;
         }
 
         public Task<IEnumerable<IImage>> Fetch()
@@ -42,24 +39,19 @@ namespace Beholder.Service.Pipeline.Functions
             return _extractFaces(image);
         }
 
-        public Task PersistFace(IImage image)
-        {
-            return _persistFace(image);
-        }
-
         public Task<IEnumerable<IRecognition>> RecogniseFaces(IImage image)
         {
             return _recogniseFaces(image);
         }
 
-        public Task PersistFacialRecognition(IRecognition recognition)
+        public Task<IPersistedRecognition> PersistRecognition(IRecognition image)
         {
-            return _persistFacialRecognition(recognition);
+            return _persistFace(image);
         }
 
-        public Task NotifyFacialRecognition(IRecognition recognition)
+        public Task NotifyRecognition(IPersistedRecognition recognition)
         {
-            return _notifyFacialRecognition(recognition);
+            return _notifyRecognition(recognition);
         }
     }
 }

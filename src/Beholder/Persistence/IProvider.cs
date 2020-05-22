@@ -4,6 +4,6 @@ namespace Beholder.Persistence
 {
     public interface IProvider
     {
-        Task<string> SaveFace(IImage image);
+        Task<IPersistedRecognition> SaveRecognition(IRecognition recognition);
     }
 }

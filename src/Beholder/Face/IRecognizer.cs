@@ -1,9 +1,7 @@
-﻿using System.Drawing;
-
-namespace Beholder.Face
+﻿namespace Beholder.Face
 {
     public interface IRecognizer
     {
-        IRecognition RecogniseFace(Bitmap source);
+        IRecognition RecogniseFace(IImage image);
     }
 }

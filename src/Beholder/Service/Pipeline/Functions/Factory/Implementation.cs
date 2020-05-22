@@ -11,23 +11,23 @@ namespace Beholder.Service.Pipeline.Functions.Factory
         private readonly Persistence.IProvider _persistenceProvider;
         private readonly Snapshot.IProvider _snapshotProvider;
         private readonly Face.IDetector _faceDetector;
-        private readonly Image.IFactory _imageFactory;
+        private readonly Face.IRecognizer _faceRecognizer;
 
-        public Implementation(Snapshot.IProvider snapshotProvider, Face.IDetector faceDetector, Persistence.IProvider persistenceProvider, Image.IFactory imageFactory)
+        public Implementation(Snapshot.IProvider snapshotProvider, Face.IDetector faceDetector, Face.IRecognizer faceRecognizer, Persistence.IProvider persistenceProvider)
         {
             _snapshotProvider = snapshotProvider;
             _faceDetector = faceDetector;
             _persistenceProvider = persistenceProvider;
-            _imageFactory = imageFactory;
+            _faceRecognizer = faceRecognizer;
         }
 
         private async Task<IEnumerable<IImage>> Fetch(ILogger logger)
         {
             try
             {
-                var bitmap = await _snapshotProvider.Get();
+                var image = await _snapshotProvider.Get();
 
-                return new[] { _imageFactory.Create(bitmap) };
+                return new[] { image };
             }
             catch (Exception e)
             {
@@ -37,29 +37,21 @@ namespace Beholder.Service.Pipeline.Functions.Factory
             }
         }
 
-        private async Task<IEnumerable<IImage>> ExtractFaces(IImage source, ILogger logger)
+        private Task<IEnumerable<IImage>> ExtractFaces(IImage image, ILogger logger)
         {
-            var bitmaps = await _faceDetector.ExtractFaces(source.Bitmap);
-
-            var images = bitmaps.Select(_imageFactory.Create).ToArray();
-
-            source.Dispose();
-
-            return images;
+            return _faceDetector.ExtractFaces(image);
         }
 
-        private async Task PersistFace(IImage source, ILogger logger)
+        private Task<IEnumerable<IRecognition>> RecogniseFace(IImage image, ILogger logger)
         {
-            await _persistenceProvider.SaveFace(source);
+            var recognition = _faceRecognizer.RecogniseFace(image);
 
-            source.Dispose();
+            return Task.FromResult<IEnumerable<IRecognition>>(new[] { recognition });
         }
 
-        private Task<IEnumerable<IRecognition>> RecogniseFace(IImage source, ILogger logger)
+        private Task<IPersistedRecognition> PersistRecognition(IRecognition recognition, ILogger logger)
         {
-            source.Dispose();
-
-            return Task.FromResult(Enumerable.Empty<IRecognition>());
+            return _persistenceProvider.SaveRecognition(recognition);
         }
 
         public Task<IFunctions> Create(ILogger logger)
@@ -67,10 +59,9 @@ namespace Beholder.Service.Pipeline.Functions.Factory
             var functions = new Functions.Implementation(
                 () => Fetch(logger),
                 image => ExtractFaces(image, logger),
-                image => PersistFace(image, logger),
                 image => RecogniseFace(image, logger),
-                recognition => Task.CompletedTask,
-                recognition => Task.CompletedTask);
+                recognition => PersistRecognition(recognition, logger),
+                persistedRecognition => Task.CompletedTask);
 
             return Task.FromResult<IFunctions>(functions);
         }

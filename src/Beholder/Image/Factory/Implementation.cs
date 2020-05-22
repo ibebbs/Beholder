@@ -11,7 +11,7 @@ namespace Beholder.Image.Factory
 
         public IImage Clone(IImage source)
         {
-            return Create((Bitmap)source.Bitmap.Clone());
+            return Create((Bitmap)source.Data.Clone());
         }
     }
 }

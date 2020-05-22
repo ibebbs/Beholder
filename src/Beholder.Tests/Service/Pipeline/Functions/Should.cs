@@ -20,10 +20,9 @@ namespace Beholder.Tests.Service.Pipeline.Functions
             var subject = new Beholder.Service.Pipeline.Functions.Implementation(
                 fake.Fetch,
                 fake.ExtractFaces,
-                fake.PersistFace,
                 fake.RecogniseFaces,
-                fake.PersistFacialRecognition,
-                fake.NotifyFacialRecognition
+                fake.PersistRecognition,
+                fake.NotifyRecognition
             );
 
             return (fake, subject);
@@ -56,11 +55,11 @@ namespace Beholder.Tests.Service.Pipeline.Functions
         {
             (var fake, var subject) = CreateSubject();
 
-            var image = A.Fake<IImage>();
+            var recognition = A.Fake<IRecognition>();
 
-            subject.PersistFace(image);
+            subject.PersistRecognition(recognition);
 
-            A.CallTo(() => fake.PersistFace(image)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fake.PersistRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
@@ -82,9 +81,9 @@ namespace Beholder.Tests.Service.Pipeline.Functions
 
             var recognition = A.Fake<IRecognition>();
 
-            subject.PersistFacialRecognition(recognition);
+            subject.PersistRecognition(recognition);
 
-            A.CallTo(() => fake.PersistFacialRecognition(recognition)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fake.PersistRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
@@ -92,11 +91,11 @@ namespace Beholder.Tests.Service.Pipeline.Functions
         {
             (var fake, var subject) = CreateSubject();
 
-            var recognition = A.Fake<IRecognition>();
+            var recognition = A.Fake<IPersistedRecognition>();
 
-            subject.NotifyFacialRecognition(recognition);
+            subject.NotifyRecognition(recognition);
 
-            A.CallTo(() => fake.NotifyFacialRecognition(recognition)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fake.NotifyRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
     }
 }

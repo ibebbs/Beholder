@@ -6,6 +6,6 @@ namespace Beholder.Face
 {
     public interface IDetector
     {
-        Task<IEnumerable<Bitmap>> ExtractFaces(Bitmap source);
+        Task<IEnumerable<IImage>> ExtractFaces(IImage image);
     }
 }

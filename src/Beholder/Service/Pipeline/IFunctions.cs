@@ -11,14 +11,12 @@ namespace Beholder.Service.Pipeline
     {
         Task<IEnumerable<IImage>> Fetch();
 
-        Task<IEnumerable<IImage>> ExtractFaces(IImage bitmap);
+        Task<IEnumerable<IImage>> ExtractFaces(IImage image);
 
-        Task PersistFace(IImage bitmap);
+        Task<IEnumerable<IRecognition>> RecogniseFaces(IImage image);
 
-        Task<IEnumerable<IRecognition>> RecogniseFaces(IImage bitmap);
+        Task<IPersistedRecognition> PersistRecognition(IRecognition recognition);
 
-        Task PersistFacialRecognition(IRecognition recognition);
-
-        Task NotifyFacialRecognition(IRecognition recognition);
+        Task NotifyRecognition(IPersistedRecognition recognition);
     }
 }

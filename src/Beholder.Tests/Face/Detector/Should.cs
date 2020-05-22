@@ -1,11 +1,7 @@
 ﻿using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Beholder.Tests.Face.Detector
@@ -22,22 +18,15 @@ namespace Beholder.Tests.Face.Detector
         [Test]
         public async Task DetectFaces()
         {
-            using (var stream = Helper.GetManifestResourceStream("Beholder.Tests.Face.Detector.faces.jpg"))
-            {
-                var subject = CreateSubject();
+            var subject = CreateSubject();
 
-                var bitmap = new Bitmap(stream);
+            var image = A.Fake<IImage>(builder => builder
+                .ConfigureFake(fake => A.CallTo(() => fake.Data).ReturnsLazily(call => Helper.GetManifestResourceByteArray("Beholder.Tests.Face.Detector.faces.jpg"))
+            ));
 
-                var result = await subject.ExtractFaces(bitmap);
+            var result = await subject.ExtractFaces(image);
 
-                Assert.That(result.Count(), Is.EqualTo(7));
-
-                //int count = 0;
-                //foreach (var image in result)
-                //{
-                //    image.Save($"D:\\Temp\\Detected\\Image{count++}.bmp");
-                //}
-            }
+            Assert.That(result.Count(), Is.EqualTo(7));
         }
     }
 }

@@ -2,11 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Beholder.Persistence.Provider
@@ -22,18 +18,14 @@ namespace Beholder.Persistence.Provider
             _logger = logger;
         }
 
-        public async Task<string> SaveFace(IImage image)
+        private async Task<Uri> SaveFace(IImage image)
         {
             var client = new BlobContainerClient(_options.Value.ConnectionString, _options.Value.UnknownFaceContainer);
 
-            using (MemoryStream stream = new MemoryStream())
+            using (MemoryStream stream = new MemoryStream(image.Data))
             {
-                image.Bitmap.Save(stream, ImageFormat.Png);
-
                 var id = Guid.NewGuid().ToString();
                 var fileName = $"{id}.png";
-
-                stream.Seek(0, SeekOrigin.Begin);
 
                 _logger.LogInformation(0, "Persisting file {0}", fileName);
 
@@ -41,8 +33,17 @@ namespace Beholder.Persistence.Provider
 
                 _logger.LogInformation(1, "Persisted file {0}", fileName);
 
-                return fileName;
+                var uri = client.GetBlobClient(fileName).Uri;
+
+                return uri;
             }
+        }
+
+        public async Task<IPersistedRecognition> SaveRecognition(IRecognition recognition)
+        {
+            var uri = await SaveFace(recognition);
+
+            return new PersistedRecognition(recognition.Data, recognition.Tags, uri.ToString());
         }
     }
 }

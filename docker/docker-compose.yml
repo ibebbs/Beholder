@@ -1,0 +1,29 @@
+version: "3.2"
+
+services:
+  # https://hub.docker.com/_/eclipse-mosquitto
+  mqtt:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+    volumes:
+      - type: volume
+        source: azurite
+        target: /data
+        volume:
+          nocopy: true
+
+volumes:
+  azurite:
+    driver_opts:
+      type: nfs
+      o: "addr=192.168.1.11,nolock,soft,rw"
+      device: ":/intelliHome/azurite"
+      

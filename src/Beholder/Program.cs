@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ML;
 using System;
 using System.Threading.Tasks;
 
@@ -9,9 +10,22 @@ namespace Beholder
 {
     public class Program
     {
+        private static string FaceRecognizerModelUri(HostBuilderContext hostContext)
+        {
+            var configuration = new Face.Recognizer.Configuration { };
+
+            hostContext.Configuration.Bind("Face:Recognizer", configuration);
+
+            return configuration.ModelUri;
+        }
+
         public static IServiceCollection ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
         {
-            services.AddSingleton<Image.IFactory, Image.Factory.Implementation>();
+            services.AddPredictionEnginePool<Face.Recognizer.InputModel, Face.Recognizer.OutputModel>()
+                .FromUri(FaceRecognizerModelUri(hostContext), TimeSpan.FromHours(1));
+
+            services.AddOptions<Face.Recognizer.Configuration>().ValidateDataAnnotations().Bind(hostContext.Configuration.GetSection("Face:Recognizer"));
+            services.AddSingleton<Face.IRecognizer, Face.Recognizer.Implementation>();
             services.AddOptions<Snapshot.Configuration>().ValidateDataAnnotations().Bind(hostContext.Configuration.GetSection("Snapshot"));
             services.AddSingleton<Face.IDetector, Face.Detector.Implementation>();
             services.AddOptions<Persistence.Configuration>().ValidateDataAnnotations().Bind(hostContext.Configuration.GetSection("Persistence"));

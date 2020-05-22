@@ -1,12 +1,7 @@
-﻿using Castle.Core.Logging;
-using FakeItEasy;
+﻿using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Beholder.Tests.Persistence.Provider
@@ -35,14 +30,13 @@ namespace Beholder.Tests.Persistence.Provider
         {
             var subject = CreateSubject();
 
-            using (var bitmap = (Bitmap) Bitmap.FromStream(Helper.GetManifestResourceStream("Beholder.Tests.Persistence.Provider.face.jpg")))
-            {
-                var image = new Beholder.Image.Implementation(bitmap);
+            var recognition = A.Fake<IRecognition>(builder => builder
+                .ConfigureFake(fake => A.CallTo(() => fake.Data).ReturnsLazily(call => Helper.GetManifestResourceByteArray("Beholder.Tests.Face.Detector.faces.jpg"))
+            ));
 
-                var fileName = await subject.SaveFace(image);
+            var persistedRecognition = await subject.SaveRecognition(recognition);
 
-                Assert.That(fileName, Is.Not.Empty);
-            }
+            Assert.That(persistedRecognition.ImageUri, Is.Not.Empty);
         }
     }
 }

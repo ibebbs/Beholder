@@ -13,10 +13,10 @@ namespace Beholder.Tests
         {
             get
             {
-                yield return new TestCaseData(typeof(Beholder.Image.IFactory))
-                    .Returns(typeof(Beholder.Image.Factory.Implementation));
                 yield return new TestCaseData(typeof(Beholder.Face.IDetector))
                     .Returns(typeof(Beholder.Face.Detector.Implementation));
+                yield return new TestCaseData(typeof(Beholder.Face.IRecognizer))
+                    .Returns(typeof(Beholder.Face.Recognizer.Implementation));
                 yield return new TestCaseData(typeof(Beholder.Persistence.IProvider))
                     .Returns(typeof(Beholder.Persistence.Provider.Implementation));
                 yield return new TestCaseData(typeof(Beholder.Snapshot.IProvider))
@@ -30,7 +30,8 @@ namespace Beholder.Tests
 
         private static readonly Dictionary<string, string> Configuration = new Dictionary<string, string>
         {
-            { "Snapshot:SnapshotUri", "http://ipcam.local/cgi?snapshot" }
+            { "Snapshot:SnapshotUri", "http://ipcam.local/cgi?snapshot" },
+            { "Face:Recognizer:ModelUri", "http://192.168.1.24:10000/devstoreaccount1/model/Model.zip" }
         };
 
         [Test, TestCaseSource(nameof(ServiceTests))]

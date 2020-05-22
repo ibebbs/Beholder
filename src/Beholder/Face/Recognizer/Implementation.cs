@@ -1,32 +1,28 @@
 ﻿using Bebbs.Monads;
+using Microsoft.Extensions.ML;
 using Microsoft.ML;
 using System;
 using System.Drawing;
+using System.Linq;
 
 namespace Beholder.Face.Recognizer
 {
     public class Implementation : IRecognizer
     {
-        private readonly Invalidatable<PredictionEngine<InputModel, OutputModel>> _context;
+        private readonly PredictionEnginePool<InputModel, OutputModel> _predictionEnginePool;
 
-        public Implementation()
+        public Implementation(PredictionEnginePool<InputModel, OutputModel> predictionEnginePool)
         {
-            _context = new Invalidatable<PredictionEngine<InputModel, OutputModel>>(CreateContext, DisposeContext);
+            _predictionEnginePool = predictionEnginePool;
         }
 
-        private PredictionEngine<InputModel, OutputModel> CreateContext()
+        public IRecognition RecogniseFace(IImage image)
         {
-            throw new NotImplementedException();
-        }
+            var inputModel = new InputModel { Image = image.Data };
 
-        private void DisposeContext(PredictionEngine<InputModel, OutputModel> obj)
-        {
-            throw new NotImplementedException();
-        }
+            var outputModel = _predictionEnginePool.Predict(inputModel);
 
-        public IRecognition RecogniseFace(Bitmap source)
-        {
-            throw new NotImplementedException();
+            return new Recognition(image.Data, new[] { new Tag(outputModel.PredictedLabel, outputModel.Score.Max()) });
         }
     }
 }

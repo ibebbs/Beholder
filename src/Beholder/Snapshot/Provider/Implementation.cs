@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
-using System;
-using System.Drawing;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -22,7 +21,7 @@ namespace Beholder.Snapshot.Provider
             _httpClient.BaseAddress = config.SnapshotUri;
         }
 
-        public async Task<Bitmap> Get()
+        public async Task<IImage> Get()
         {
             var response = await _httpClient.GetAsync(string.Empty);
 
@@ -30,9 +29,12 @@ namespace Beholder.Snapshot.Provider
 
             using (var stream = await response.Content.ReadAsStreamAsync())
             {
-                Bitmap bitmap = new Bitmap(stream);
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(memoryStream);
 
-                return bitmap;
+                    return new Image(memoryStream.ToArray());
+                }
             }
         }
     }

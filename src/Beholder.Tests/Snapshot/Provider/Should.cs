@@ -3,10 +3,10 @@ using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using RichardSzalay.MockHttp;
 using System;
-using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Beholder.Tests.Snapshot.Provider
@@ -67,24 +67,16 @@ namespace Beholder.Tests.Snapshot.Provider
 
                 var subject = CreateSubject(server.ToHttpClient());
 
-                var bitmap = await subject.Get();
+                var image = await subject.Get();
 
-                Assert.That(bitmap.Width, Is.EqualTo(626));
-                Assert.That(bitmap.Height, Is.EqualTo(626));
-            }
-        }
-
-        [Test]
-        public void ThrowIfServerResponseWithNonImage()
-        {
-            using (var stream = Helper.GetManifestResourceStream("Beholder.Tests.Snapshot.Provider.coyote01.wav"))
-            {
-                var server = new MockHttpMessageHandler();
-                server.Expect(SnapshotUri).Respond("audio/wav", stream);
-
-                var subject = CreateSubject(server.ToHttpClient());
-
-                Assert.ThrowsAsync<ArgumentException>(subject.Get);
+                using (var received = new MemoryStream(image.Data))
+                {
+                    using (var bitmap = Bitmap.FromStream(received))
+                    {
+                        Assert.That(bitmap.Width, Is.EqualTo(626));
+                        Assert.That(bitmap.Height, Is.EqualTo(626));
+                    }
+                }
             }
         }
     }

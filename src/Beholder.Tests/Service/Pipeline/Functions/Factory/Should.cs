@@ -1,7 +1,6 @@
 ﻿using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
-using System.Drawing;
 using System.Threading.Tasks;
 
 namespace Beholder.Tests.Service.Pipeline.Functions.Factory
@@ -13,10 +12,10 @@ namespace Beholder.Tests.Service.Pipeline.Functions.Factory
         {
             var snapshotProvider = A.Fake<Beholder.Snapshot.IProvider>();
             var faceDetector = A.Fake<Beholder.Face.IDetector>();
+            var faceRecognizer = A.Fake<Beholder.Face.IRecognizer>();
             var persistenceProvider = A.Fake<Beholder.Persistence.IProvider>();
-            var imageFactory = A.Fake<Image.IFactory>();
             var logger = A.Fake<ILogger>();
-            var subject = new Beholder.Service.Pipeline.Functions.Factory.Implementation(snapshotProvider, faceDetector, persistenceProvider, imageFactory);
+            var subject = new Beholder.Service.Pipeline.Functions.Factory.Implementation(snapshotProvider, faceDetector, faceRecognizer, persistenceProvider);
 
             return (snapshotProvider, faceDetector, persistenceProvider, logger, subject);
         }
@@ -40,63 +39,23 @@ namespace Beholder.Tests.Service.Pipeline.Functions.Factory
 
             var functions = await subject.Create(logger);
 
-            await functions.ExtractFaces(A.Fake<IImage>());
-
-            A.CallTo(() => faceDetector.ExtractFaces(A<Bitmap>.Ignored)).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
-        public async Task DisposeTheSourceImageAfterExtractingFaces()
-        {
-            (var snapshotProvider, var faceDetector, var persistenceProvider, var logger, var subject) = CreateSubject();
-
-            var functions = await subject.Create(logger);
-
             var image = A.Fake<IImage>();
-
             await functions.ExtractFaces(image);
 
-            A.CallTo(() => image.Dispose()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => faceDetector.ExtractFaces(image)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
-        public async Task UseThePersistenceProviderToSaveFace()
+        public async Task UseThePersistenceProviderToSaveRecognition()
         {
             (var snapshotProvider, var faceDetector, var persistenceProvider, var logger, var subject) = CreateSubject();
 
             var functions = await subject.Create(logger);
 
-            await functions.PersistFace(A.Fake<IImage>());
+            var recognition = A.Fake<IRecognition>();
+            await functions.PersistRecognition(recognition);
 
-            A.CallTo(() => persistenceProvider.SaveFace(A<IImage>.Ignored)).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
-        public async Task DisposeTheSourceImageAfterPersistingFace()
-        {
-            (var snapshotProvider, var faceDetector, var persistenceProvider, var logger, var subject) = CreateSubject();
-
-            var functions = await subject.Create(logger);
-
-            var image = A.Fake<IImage>();
-
-            await functions.PersistFace(image);
-
-            A.CallTo(() => image.Dispose()).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
-        public async Task DisposeTheSourceImageAfterRecognisingFaces()
-        {
-            (var snapshotProvider, var faceDetector, var persistenceProvider, var logger, var subject) = CreateSubject();
-
-            var functions = await subject.Create(logger);
-
-            var image = A.Fake<IImage>();
-
-            await functions.RecogniseFaces(image);
-
-            A.CallTo(() => image.Dispose()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => persistenceProvider.SaveRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
     }
 }

@@ -11,5 +11,20 @@ namespace Beholder.Tests
 
             return assemby.GetManifestResourceStream(name);
         }
+
+        public static byte[] GetManifestResourceByteArray(string name)
+        {
+            var assemby = Assembly.GetExecutingAssembly();
+
+            using (var source = GetManifestResourceStream(name))
+            {
+                using (var target = new MemoryStream())
+                {
+                    source.CopyTo(target);
+
+                    return target.ToArray();
+                }
+            }
+        }
     }
 }

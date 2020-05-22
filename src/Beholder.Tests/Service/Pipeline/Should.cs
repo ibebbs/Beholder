@@ -12,20 +12,19 @@ namespace Beholder.Tests.Service.Pipeline
     [TestFixture]
     public class Should
     {
-        private (Beholder.Service.Pipeline.IFunctions, Beholder.Image.IFactory, Beholder.Service.Pipeline.Implementation) CreateSubject(Beholder.Service.Configuration configuration = null)
+        private (Beholder.Service.Pipeline.IFunctions, Beholder.Service.Pipeline.Implementation) CreateSubject(Beholder.Service.Configuration configuration = null)
         {
             var pipelineFunctions = A.Fake<Beholder.Service.Pipeline.IFunctions>();
-            var imageFactory = A.Fake<Beholder.Image.IFactory>();
             var logger = A.Fake<ILogger<Beholder.Service.Pipeline.Implementation>>();
-            var subject = new Beholder.Service.Pipeline.Implementation(pipelineFunctions, imageFactory, logger);
+            var subject = new Beholder.Service.Pipeline.Implementation(pipelineFunctions, logger);
 
-            return (pipelineFunctions, imageFactory, subject);
+            return (pipelineFunctions, subject);
         }
 
         [Test]
         public void LimitQueuedStartCallsToTwo()
         {
-            (var functions, var imageFactory, var subject) = CreateSubject();
+            (var functions, var subject) = CreateSubject();
 
             A.CallTo(() => functions.Fetch()).Returns(new TaskCompletionSource<IEnumerable<IImage>>().Task);
 
@@ -41,7 +40,7 @@ namespace Beholder.Tests.Service.Pipeline
         [Test]
         public async Task CallFetchWhenStartAsyncCalled()
         {
-            (var functions, var imageFactory, var subject) = CreateSubject();
+            (var functions, var subject) = CreateSubject();
 
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
 
@@ -57,7 +56,7 @@ namespace Beholder.Tests.Service.Pipeline
         [Test]
         public async Task NotAllowConcurrentCallsToFetch()
         {
-            (var functions, var imageFactory, var subject) = CreateSubject();
+            (var functions, var subject) = CreateSubject();
 
             A.CallTo(() => functions.Fetch()).Returns(new TaskCompletionSource<IEnumerable<IImage>>().Task);
 
@@ -73,7 +72,7 @@ namespace Beholder.Tests.Service.Pipeline
         [Test]
         public async Task PassTheResultOfFetchToExtractFaces()
         {
-            (var functions, var imageFactory, var subject) = CreateSubject();
+            (var functions, var subject) = CreateSubject();
 
             var image = A.Fake<IImage>();
 
@@ -87,89 +86,54 @@ namespace Beholder.Tests.Service.Pipeline
         }
 
         [Test]
-        public async Task CloneTheResultOfFetchToExtractFaces()
-        {
-            (var functions, var imageFactory, var subject) = CreateSubject();
-
-            var fetchedImage = A.Fake<IImage>();
-            var faceImage = A.Fake<IImage>();
-
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { fetchedImage }.AsEnumerable()));
-            A.CallTo(() => functions.ExtractFaces(fetchedImage)).Returns(Task.FromResult(new[] { faceImage }.AsEnumerable()));
-
-            await subject.StartAsync(CancellationToken.None);
-            await subject.WaitForCompletion();
-
-            A.CallTo(() => imageFactory.Clone(faceImage)).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
-        public async Task PassTheResultOfExtractFacesToPersistFaces()
-        {
-            (var functions, var imageFactory, var subject) = CreateSubject();
-
-            var image = A.Fake<IImage>();
-
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
-            A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
-
-            await subject.StartAsync(CancellationToken.None);
-            await subject.WaitForCompletion();
-
-            A.CallTo(() => functions.PersistFace(image)).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
         public async Task PassTheResultOfExtractFacesToRecogniseFaces()
         {
-            (var functions, var imageFactory, var subject) = CreateSubject();
+            (var functions, var subject) = CreateSubject();
 
             var image = A.Fake<IImage>();
 
             A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
             A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
-            A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(Enumerable.Empty<IRecognition>()));
 
             await subject.StartAsync(CancellationToken.None);
             await subject.WaitForCompletion();
 
-            A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => functions.RecogniseFaces(image)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
-        public async Task PassTheResultOfRecogniseFacesToPersistFaces()
+        public async Task PassTheResultOfRecogniseFacesToPersistRecognition()
         {
-            (var functions, var imageFactory, var subject) = CreateSubject();
+            (var functions, var subject) = CreateSubject();
 
-            var image = A.Fake<IImage>();
             var recognition = A.Fake<IRecognition>();
 
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
-            A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
+            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
+            A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
             A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { recognition }.AsEnumerable()));
 
             await subject.StartAsync(CancellationToken.None);
             await subject.WaitForCompletion();
 
-            A.CallTo(() => functions.PersistFacialRecognition(recognition)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => functions.PersistRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
-        public async Task PassTheResultOfRecogniseFacesToNotifyFaces()
+        public async Task PassTheResultOfPersistRecognitionToNotifyRecognition()
         {
-            (var functions, var imageFactory, var subject) = CreateSubject();
+            (var functions, var subject) = CreateSubject();
 
-            var image = A.Fake<IImage>();
-            var recognition = A.Fake<IRecognition>();
+            var recognition = A.Fake<IPersistedRecognition>();
 
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
-            A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
-            A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { recognition }.AsEnumerable()));
+            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
+            A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
+            A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IRecognition>() }.AsEnumerable()));
+            A.CallTo(() => functions.PersistRecognition(A<IRecognition>.Ignored)).Returns(Task.FromResult(recognition));
 
             await subject.StartAsync(CancellationToken.None);
             await subject.WaitForCompletion();
 
-            A.CallTo(() => functions.NotifyFacialRecognition(recognition)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => functions.NotifyRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
     }
 }

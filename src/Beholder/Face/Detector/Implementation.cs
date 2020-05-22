@@ -3,6 +3,8 @@ using DlibDotNet.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Rect = DlibDotNet.Rectangle;
@@ -21,30 +23,43 @@ namespace Beholder.Face.Detector
             _logger = logger;
         }
 
-        private static Bitmap ExtractFace(Rect face, Bitmap source)
+        private static byte[] ExtractFace(Rect face, Bitmap source)
         {
-            var target = new Bitmap((int)face.Width, (int)face.Height);
-
-            using (Graphics g = Graphics.FromImage(target))
+            using (var target = new Bitmap((int)face.Width, (int)face.Height))
             {
-                g.DrawImage(source, new Rectangle(0, 0, target.Width, target.Height), new Rectangle(face.Left, face.Top, (int)face.Width, (int)face.Height), GraphicsUnit.Pixel);
-            }
+                using (Graphics g = Graphics.FromImage(target))
+                {
+                    g.DrawImage(source, new Rectangle(0, 0, target.Width, target.Height), new Rectangle(face.Left, face.Top, (int)face.Width, (int)face.Height), GraphicsUnit.Pixel);
+                }
 
-            return target;
+                using (var memoryStream = new MemoryStream())
+                {
+                    target.Save(memoryStream, ImageFormat.Png);
+
+                    return memoryStream.ToArray();
+                }
+            }
         }
 
-        public Task<IEnumerable<Bitmap>> ExtractFaces(Bitmap source)
+        public Task<IEnumerable<IImage>> ExtractFaces(IImage image)
         {
-            using (var dlibImage = source.ToArray2D<RgbPixel>())
+            using (var stream = new MemoryStream(image.Data))
             {
-                var faces = _faceDetector 
-                    .Operator(dlibImage)
-                    .Select(face => ExtractFace(face, source))
-                    .ToArray();
+                using (var bitmap = new Bitmap(stream))
+                {
+                    using (var dlibImage = bitmap.ToArray2D<RgbPixel>())
+                    {
+                        var faces = _faceDetector
+                            .Operator(dlibImage)
+                            .Select(face => ExtractFace(face, bitmap))
+                            .Select(data => new Image(data))
+                            .ToArray();
 
-                _logger.LogInformation("Found {0} faces", faces.Length);
+                        _logger.LogInformation("Found {0} faces", faces.Length);
 
-                return Task.FromResult<IEnumerable<Bitmap>>(faces);
+                        return Task.FromResult<IEnumerable<IImage>>(faces);
+                    }
+                }
             }
         }
     }
