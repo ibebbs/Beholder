@@ -1,5 +1,6 @@
 ﻿using FakeItEasy;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,14 @@ namespace Beholder.Tests.Service.Processor
 {
     public class Should
     {
-        private Beholder.Service.Processor.Implementation CreateSubject()
+        private Beholder.Service.Processor.Implementation CreateSubject(Beholder.Service.Configuration configuration = null)
         {
+            configuration ??= new Beholder.Service.Configuration();
+
+            var options = A.Fake<IOptions<Beholder.Service.Configuration>>(builder => builder.ConfigureFake(fake => A.CallTo(() => fake.Value).Returns(configuration)));
             var logger = A.Fake<ILogger<Beholder.Service.Processor.Implementation>>();
 
-            return new Beholder.Service.Processor.Implementation(logger);
+            return new Beholder.Service.Processor.Implementation(options, logger);
         }
 
         [Test]
@@ -137,6 +141,28 @@ namespace Beholder.Tests.Service.Processor
             completionTask.SetResult(null);
 
             Assert.That(task.IsCompleted, Is.True);
+        }
+
+        [Test]
+        public async Task OnlyPumpASingleMessageIfOneShotIsTrue()
+        {
+            Beholder.Service.Configuration configuration = new Beholder.Service.Configuration
+            {
+                OneShot = true
+            };
+
+            var subject = CreateSubject(configuration);
+
+            var pipeline = A.Fake<Beholder.Service.IPipeline>();
+            A.CallTo(() => pipeline.StartAsync(A<CancellationToken>.Ignored)).Returns(Task.CompletedTask);
+            A.CallTo(() => pipeline.WaitForCompletion()).Returns(Task.CompletedTask);
+
+            await Task.WhenAny(
+                Task.Run(() => subject.RunAsync(pipeline, CancellationToken.None)),
+                Task.Delay(TimeSpan.FromSeconds(1))
+            );
+
+            A.CallTo(() => pipeline.StartAsync(A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
         }
     }
 }

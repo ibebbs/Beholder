@@ -9,5 +9,7 @@ namespace Beholder.Service
 
         [Required]
         public float RecognitionConfidence { get; set; } = 0.8f;
+
+        public bool OneShot { get; set; } = false;
     }
 }
