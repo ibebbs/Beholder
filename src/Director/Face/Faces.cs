@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -111,9 +112,9 @@ namespace Director.Face
         [HttpPost()]
         [Consumes("application/x-www-form-urlencoded")]
         [ProducesResponseType(201, Type = typeof(Data.Face))]
-        public async Task<IActionResult> Add([FromForm] Uri uri)
+        public async Task<IActionResult> Add([FromForm] Uri uri, [FromForm] string location)
         {
-            var face = new Data.Face { Id = Guid.NewGuid(), Uri = uri.ToString(), Created = DateTime.UtcNow };
+            var face = new Data.Face { Id = Guid.NewGuid(), Uri = uri.ToString(), Location = location, Created = DateTime.UtcNow };
 
             try
             {

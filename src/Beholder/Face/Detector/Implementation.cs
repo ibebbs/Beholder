@@ -52,7 +52,7 @@ namespace Beholder.Face.Detector
                         var faces = _faceDetector
                             .Operator(dlibImage)
                             .Select(face => ExtractFace(face, bitmap))
-                            .Select(data => new Image(data))
+                            .Select(data => new Image(image.Meta, data))
                             .ToArray();
 
                         _logger.LogInformation("Found {0} faces", faces.Length);

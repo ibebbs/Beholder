@@ -28,7 +28,7 @@ namespace Beholder.Face.Recognizer
 
             _logger.LogInformation("Recognition complete. Identified as {0} with confidence {1:P2}", label, score);
 
-            return new Recognition(image.Data, new[] { new Tag(label, score) });
+            return new Recognition(image.Meta, image.Data, new[] { new Tag(label, score) });
         }
     }
 }

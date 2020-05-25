@@ -34,7 +34,7 @@ namespace Beholder
 
     public class Recognition : Image, IRecognition
     {
-        public Recognition(byte[] data, IEnumerable<Tag> tags) : base(data)
+        public Recognition(Meta meta, byte[] data, IEnumerable<Tag> tags) : base(meta, data)
         {
             Tags = tags;
         }

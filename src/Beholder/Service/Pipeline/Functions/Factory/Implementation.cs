@@ -21,11 +21,11 @@ namespace Beholder.Service.Pipeline.Functions.Factory
             _faceRecognizer = faceRecognizer;
         }
 
-        private async Task<IEnumerable<IImage>> Fetch(ILogger logger)
+        private async Task<IEnumerable<IImage>> Fetch(string location, ILogger logger)
         {
             try
             {
-                var image = await _snapshotProvider.Get();
+                var image = await _snapshotProvider.Get(location);
 
                 return new[] { image };
             }
@@ -64,7 +64,7 @@ namespace Beholder.Service.Pipeline.Functions.Factory
         public Task<IFunctions> Create(ILogger logger)
         {
             var functions = new Functions.Implementation(
-                () => Fetch(logger),
+                location => Fetch(location, logger),
                 image => ExtractFaces(image, logger),
                 image => RecogniseFace(image, logger),
                 recognition => PersistRecognition(recognition, logger),

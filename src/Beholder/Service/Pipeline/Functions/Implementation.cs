@@ -9,14 +9,14 @@ namespace Beholder.Service.Pipeline.Functions
     /// </summary>
     public class Implementation : IFunctions
     {
-        private readonly Func<Task<IEnumerable<IImage>>> _fetch;
+        private readonly Func<string, Task<IEnumerable<IImage>>> _fetch;
         private readonly Func<IImage, Task<IEnumerable<IImage>>> _extractFaces;
         private readonly Func<IImage, Task<IEnumerable<IRecognition>>> _recogniseFaces;
         private readonly Func<IRecognition, Task<IPersistedRecognition>> _persistRecognition;
         private readonly Func<IPersisted, Task> _notifyPersisted;
 
         public Implementation(
-            Func<Task<IEnumerable<IImage>>> fetch,
+            Func<string, Task<IEnumerable<IImage>>> fetch,
             Func<IImage, Task<IEnumerable<IImage>>> extractFaces,
             Func<IImage, Task<IEnumerable<IRecognition>>> recogniseFaces,
             Func<IRecognition, Task<IPersistedRecognition>> persistRecognition,
@@ -29,9 +29,9 @@ namespace Beholder.Service.Pipeline.Functions
             _notifyPersisted = notifyPersisted;
         }
 
-        public Task<IEnumerable<IImage>> Fetch()
+        public Task<IEnumerable<IImage>> Fetch(string location)
         {
-            return _fetch();
+            return _fetch(location);
         }
 
         public Task<IEnumerable<IImage>> ExtractFaces(IImage image)

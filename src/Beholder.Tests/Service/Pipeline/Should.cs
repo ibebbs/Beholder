@@ -30,7 +30,7 @@ namespace Beholder.Tests.Service.Pipeline
         {
             (var functions, var subject) = CreateSubject();
 
-            A.CallTo(() => functions.Fetch()).Returns(new TaskCompletionSource<IEnumerable<IImage>>().Task);
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).Returns(new TaskCompletionSource<IEnumerable<IImage>>().Task);
 
             var task1 = subject.StartAsync(CancellationToken.None);
             var task2 = subject.StartAsync(CancellationToken.None);
@@ -48,13 +48,13 @@ namespace Beholder.Tests.Service.Pipeline
 
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
 
-            A.CallTo(() => functions.Fetch()).Invokes(call => tcs.SetResult(null));
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).Invokes(call => tcs.SetResult(null));
 
             await subject.StartAsync(CancellationToken.None);
 
             await tcs.Task;
 
-            A.CallTo(() => functions.Fetch()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace Beholder.Tests.Service.Pipeline
         {
             (var functions, var subject) = CreateSubject();
 
-            A.CallTo(() => functions.Fetch()).Returns(new TaskCompletionSource<IEnumerable<IImage>>().Task);
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).Returns(new TaskCompletionSource<IEnumerable<IImage>>().Task);
 
             await subject.StartAsync(CancellationToken.None);
             await subject.StartAsync(CancellationToken.None);
@@ -70,7 +70,7 @@ namespace Beholder.Tests.Service.Pipeline
             // Give TPL a chance to invoke the Fetch funtion twice
             await Task.Delay(TimeSpan.FromMilliseconds(10));
 
-            A.CallTo(() => functions.Fetch()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace Beholder.Tests.Service.Pipeline
 
             var image = A.Fake<IImage>();
 
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
             A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(Enumerable.Empty<IImage>()));
 
             await subject.StartAsync(CancellationToken.None);
@@ -96,7 +96,7 @@ namespace Beholder.Tests.Service.Pipeline
 
             var image = A.Fake<IImage>();
 
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
             A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { image }.AsEnumerable()));
 
             await subject.StartAsync(CancellationToken.None);
@@ -112,7 +112,7 @@ namespace Beholder.Tests.Service.Pipeline
 
             var recognition = A.Fake<IRecognition>();
 
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
             A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
             A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { recognition }.AsEnumerable()));
 
@@ -129,7 +129,7 @@ namespace Beholder.Tests.Service.Pipeline
 
             var persistedRecognition = A.Fake<IPersistedRecognition>();
 
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
+            A.CallTo(() => functions.Fetch(A<string>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
             A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
             A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IRecognition>() }.AsEnumerable()));
             A.CallTo(() => functions.PersistRecognition(A<IRecognition>.Ignored)).Returns(Task.FromResult(persistedRecognition));

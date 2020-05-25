@@ -9,7 +9,7 @@ namespace Beholder.Service.Pipeline
     /// </summary>
     public interface IFunctions
     {
-        Task<IEnumerable<IImage>> Fetch();
+        Task<IEnumerable<IImage>> Fetch(string location);
 
         Task<IEnumerable<IImage>> ExtractFaces(IImage image);
 

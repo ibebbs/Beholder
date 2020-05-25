@@ -2,8 +2,8 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    CREATE TABLE faces (id uuid PRIMARY KEY, uri varchar(255), created timestamp);
-    INSERT INTO faces (id, uri, created) VALUES('b32b7afc-c394-4f08-a07f-b9fd48f095cf', 'http://192.168.1.22:10000/devstoreaccount1/unrecognised/0094fcbf-6d5e-4b05-a39b-f5c209b46379.png', '2020-05-24T09:35:40Z');
+    CREATE TABLE faces (id uuid PRIMARY KEY, uri varchar(255), location varchar(80), created timestamp);
+    INSERT INTO faces (id, uri, location, created) VALUES('b32b7afc-c394-4f08-a07f-b9fd48f095cf', 'http://192.168.1.22:10000/devstoreaccount1/unrecognised/0094fcbf-6d5e-4b05-a39b-f5c209b46379.png', 'office', '2020-05-24T09:35:40Z');
 
     CREATE TABLE recogniser (id uuid PRIMARY KEY, name varchar(80));
     INSERT INTO recogniser (id, name) VALUES ('040c6e46-3bb3-488b-b4de-4b9a5e94c5de', 'ml.net');

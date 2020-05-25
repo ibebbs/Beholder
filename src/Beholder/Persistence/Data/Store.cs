@@ -20,7 +20,7 @@ namespace Beholder.Persistence.Data
 
         public async Task SaveRecognition(IRecognition recognition, Uri blobUri)
         {
-            var face = await _facesClient.AddAsync(blobUri);
+            var face = await _facesClient.AddAsync(blobUri, recognition.Meta.Location);
 
             var tag = recognition.Tags.OrderByDescending(tag => tag.Confidence).FirstOrDefault();
 

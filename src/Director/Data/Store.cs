@@ -51,14 +51,14 @@ namespace Director.Data
         
         public async Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync()
         {
-            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.created FROM faces f LEFT OUTER JOIN recognition r ON r.face_id = f.id WHERE r.id IS NULL").ConfigureAwait(false);
+            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.location, f.created FROM faces f LEFT OUTER JOIN recognition r ON r.face_id = f.id WHERE r.id IS NULL").ConfigureAwait(false);
 
             return result;
         }
         
         public async Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(float confidence)
         {
-            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.created FROM faces f WHERE NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.confidence > @0)", confidence).ConfigureAwait(false);
+            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.location, f.created FROM faces f WHERE NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.confidence > @0)", confidence).ConfigureAwait(false);
 
             return result;
         }
@@ -83,7 +83,6 @@ namespace Director.Data
 
             return face.Id;
         }
-
 
         public async Task<IReadOnlyCollection<Recognition>> GetRecognitionsAsync()
         {

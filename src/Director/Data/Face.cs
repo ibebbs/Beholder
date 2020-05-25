@@ -14,6 +14,9 @@ namespace Director.Data
         [Column("uri")]
         public string Uri { get; set; }
 
+        [Column("location")]
+        public string Location { get; set; }
+
         [Column("created")]
         public DateTime Created { get; set; }
     }

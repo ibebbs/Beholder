@@ -25,11 +25,11 @@ namespace Director.Client
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri);
+        System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, string location);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, string location, System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<Face> GetFaceAsync(System.Guid id);
@@ -167,14 +167,14 @@ namespace Director.Client
         }
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri)
+        public System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, string location)
         {
-            return AddAsync(uri, System.Threading.CancellationToken.None);
+            return AddAsync(uri, location, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, string location, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/faces");
@@ -187,6 +187,8 @@ namespace Director.Client
                     var keyValues_ = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, string>>();
                     if (uri != null)
                         keyValues_.Add(new System.Collections.Generic.KeyValuePair<string, string>("uri", ConvertToString(uri, System.Globalization.CultureInfo.InvariantCulture)));
+                    if (location != null)
+                        keyValues_.Add(new System.Collections.Generic.KeyValuePair<string, string>("location", ConvertToString(location, System.Globalization.CultureInfo.InvariantCulture)));
                     request_.Content = new System.Net.Http.FormUrlEncodedContent(keyValues_);
                     request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
@@ -1439,6 +1441,9 @@ namespace Director.Client
     
         [Newtonsoft.Json.JsonProperty("Uri", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Uri { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("Location", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Location { get; set; }
     
         [Newtonsoft.Json.JsonProperty("Created", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]

@@ -33,9 +33,9 @@ namespace Beholder.Tests.Service.Pipeline.Functions
         {
             (var fake, var subject) = CreateSubject();
 
-            subject.Fetch();
+            subject.Fetch("Test");
 
-            A.CallTo(() => fake.Fetch()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fake.Fetch("Test")).MustHaveHappenedOnceExactly();
         }
 
         [Test]

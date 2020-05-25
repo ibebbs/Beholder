@@ -39,7 +39,7 @@ namespace Beholder.Tests.Snapshot.Provider
 
                 var subject = CreateSubject(server.ToHttpClient());
 
-                await subject.Get();
+                await subject.Get("Test");
 
                 server.VerifyNoOutstandingExpectation();
             }
@@ -54,7 +54,7 @@ namespace Beholder.Tests.Snapshot.Provider
 
             var subject = CreateSubject(server.ToHttpClient());
 
-            Assert.ThrowsAsync<HttpRequestException>(subject.Get);
+            Assert.ThrowsAsync<HttpRequestException>(() => subject.Get(string.Empty));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace Beholder.Tests.Snapshot.Provider
 
                 var subject = CreateSubject(server.ToHttpClient());
 
-                var image = await subject.Get();
+                var image = await subject.Get(string.Empty);
 
                 using (var received = new MemoryStream(image.Data))
                 {

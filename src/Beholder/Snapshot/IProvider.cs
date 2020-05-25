@@ -5,6 +5,6 @@ namespace Beholder.Snapshot
 {
     public interface IProvider
     {
-        Task<IImage> Get();
+        Task<IImage> Get(string location);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace Beholder.Snapshot.Provider
             _httpClient.BaseAddress = config.SnapshotUri;
         }
 
-        public async Task<IImage> Get()
+        public async Task<IImage> Get(string location)
         {
             var response = await _httpClient.GetAsync(string.Empty);
 
@@ -33,7 +34,7 @@ namespace Beholder.Snapshot.Provider
                 {
                     await stream.CopyToAsync(memoryStream);
 
-                    return new Image(memoryStream.ToArray());
+                    return new Image(new Meta(DateTimeOffset.UtcNow, location),  memoryStream.ToArray());
                 }
             }
         }

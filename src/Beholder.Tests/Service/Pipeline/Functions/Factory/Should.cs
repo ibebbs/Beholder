@@ -27,9 +27,9 @@ namespace Beholder.Tests.Service.Pipeline.Functions.Factory
 
             var functions = await subject.Create(logger);
 
-            await functions.Fetch();
+            await functions.Fetch("Test");
 
-            A.CallTo(() => snapshotProvider.Get()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => snapshotProvider.Get("Test")).MustHaveHappenedOnceExactly();
         }
 
         [Test]
