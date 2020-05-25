@@ -59,11 +59,20 @@ namespace Director.Face
             return Ok(faces);
         }
 
-        [HttpGet("unrecognised/{confidence}", Name = nameof(GetUnrecognisedAtConfidence))]
+        [HttpGet("unrecognised/at/{confidence}", Name = nameof(GetUnrecognisedAtConfidence))]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Face>))]
         public async Task<IActionResult> GetUnrecognisedAtConfidence(float confidence)
         {
             var faces = await _dataStore.GetUnrecognisedAsync(confidence);
+
+            return Ok(faces);
+        }
+
+        [HttpGet("unrecognised/by/{recogniser}", Name = nameof(GetUnrecognisedBy))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Face>))]
+        public async Task<IActionResult> GetUnrecognisedBy([FromRoute] Guid recogniser)
+        {
+            var faces = await _dataStore.GetUnrecognisedByAsync(recogniser);
 
             return Ok(faces);
         }
