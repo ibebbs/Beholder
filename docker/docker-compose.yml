@@ -25,7 +25,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD="P2ssw0rd"
+      - POSTGRES_PASSWORD=P2ssw0rd
     volumes:
       - type: volume
         source: postgresql
@@ -41,10 +41,10 @@ services:
       - postgresql
       - azurite
     environment:
-      - ASPNETCORE_URLS="http://0.0.0.0:9802"
+      - ASPNETCORE_URLS=http://0.0.0.0:9802
       - Director:ConnectionStrings:PostgreSQL=Host=postgresql;Database=postgres;Username=postgres;Password=P2ssw0rd
       - Director:Blob:ConnectionString=AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
-      - Director:Blob:ContainerName=faces
+      - Director:Blob:ContainerName=devstoreaccount1/faces
 
   office-observer:
     image: ibebbs/beholder-observer
