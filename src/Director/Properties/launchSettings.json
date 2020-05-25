@@ -22,7 +22,6 @@
       "launchUrl": "weatherforecast",
       "environmentVariables": {
         "Director:ConnectionStrings:PostgreSQL": "Host=127.0.0.1;Database=postgres;Username=postgres;Password=P2ssw0rd",
-        "ASPNETCORE_URLS": "http://localhost:9802",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5000"

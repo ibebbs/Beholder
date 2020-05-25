@@ -14,6 +14,10 @@ namespace Director.Data
 
         Task<Guid> AddAsync(Face face);
 
+        Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync();
+
+        Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(float confidence);
+
         Task<IReadOnlyCollection<Recogniser>> GetRecognisersAsync();
 
         Task<IReadOnlyCollection<Recognition>> GetRecognitionsAsync();
@@ -41,6 +45,20 @@ namespace Director.Data
         public async Task<IReadOnlyCollection<Face>> GetFacesAsync()
         {
             var result = await _database.FetchAsync<Face>().ConfigureAwait(false);
+
+            return result;
+        }
+        
+        public async Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync()
+        {
+            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.created FROM faces f LEFT OUTER JOIN recognition r ON r.face_id = f.id WHERE r.id IS NULL").ConfigureAwait(false);
+
+            return result;
+        }
+        
+        public async Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(float confidence)
+        {
+            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.created FROM faces f WHERE NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.confidence > @0)", confidence).ConfigureAwait(false);
 
             return result;
         }

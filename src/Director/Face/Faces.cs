@@ -43,7 +43,24 @@ namespace Director.Face
             {
                 return NotFound();
             }
+        }
 
+        [HttpGet("unrecognised", Name = nameof(GetUnrecognised))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Face>))]
+        public async Task<IActionResult> GetUnrecognised()
+        {
+            var faces = await _dataStore.GetUnrecognisedAsync();
+
+            return Ok(faces);
+        }
+
+        [HttpGet("unrecognised/{confidence}", Name = nameof(GetUnrecognisedAtConfidence))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Face>))]
+        public async Task<IActionResult> GetUnrecognisedAtConfidence(float confidence)
+        {
+            var faces = await _dataStore.GetUnrecognisedAsync(confidence);
+
+            return Ok(faces);
         }
 
         [HttpGet("{id}/recognitions", Name = nameof(GetRecognitions))]

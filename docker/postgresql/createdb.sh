@@ -12,5 +12,12 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     INSERT INTO recogniser (id, name) VALUES ('1aae3457-f86c-45c6-ae7f-935a68c77df5', 'mia');
     INSERT INTO recogniser (id, name) VALUES ('f1704e03-fb90-473c-ae49-44c19a71e14a', 'max');
 
-    CREATE TABLE recognition (id uuid PRIMARY KEY, face_id uuid, recogniser_id uuid, label varchar(80), confidence float, created timestamp);
+    CREATE TABLE recognition (
+        id uuid PRIMARY KEY, 
+        face_id uuid references faces(id), 
+        recogniser_id uuid references recogniser(id), 
+        label varchar(80), 
+        confidence float, 
+        created timestamp
+    );
 EOSQL
