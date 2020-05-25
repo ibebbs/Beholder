@@ -10,8 +10,12 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["Beholder/nuget.config", "Beholder/"]
+
+
+COPY ["Director.Client/Director.Client.csproj", "Director.Client/"]
+RUN dotnet restore "Director.Client/Director.Client.csproj"
 COPY ["Beholder/Beholder.csproj", "Beholder/"]
+COPY ["Beholder/nuget.config", "Beholder/"]
 RUN dotnet restore "Beholder/Beholder.csproj"
 COPY . .
 WORKDIR "/src/Beholder"
