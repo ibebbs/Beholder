@@ -37,10 +37,13 @@ namespace Director
                 .WithNamedParams()
             );
 
+            services.AddOptions<Blob.Configuration>().ValidateDataAnnotations().Bind(Configuration.GetSection("Blob"));
+            services.AddTransient<Blob.IStore, Blob.Store>();
+
             services.AddTransient<IDbConnection>(sp => new NpgsqlConnection());
             services.AddTransient<IDatabase>(sp => sp.GetService<IDatabaseBuildConfiguration>().Create());
-
             services.AddTransient<Data.IStore, Data.Store>();
+
             services.AddControllers();
 
             services.AddOpenApiDocument();

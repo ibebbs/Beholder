@@ -5,6 +5,6 @@ namespace Beholder.Persistence
 {
     public interface IProvider
     {
-        Task<Uri> Save(IRecognition recognition);
+        Task<(Guid, Uri)> Save(IRecognition recognition);
     }
 }

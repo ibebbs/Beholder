@@ -17,10 +17,6 @@ namespace Beholder.Tests
                     .Returns(typeof(Beholder.Face.Detector.Implementation));
                 yield return new TestCaseData(typeof(Beholder.Face.IRecognizer))
                     .Returns(typeof(Beholder.Face.Recognizer.Implementation));
-                yield return new TestCaseData(typeof(Beholder.Persistence.Blob.IStore))
-                    .Returns(typeof(Beholder.Persistence.Blob.Store));
-                yield return new TestCaseData(typeof(Beholder.Persistence.Data.IStore))
-                    .Returns(typeof(Beholder.Persistence.Data.Store));
                 yield return new TestCaseData(typeof(Beholder.Persistence.IProvider))
                     .Returns(typeof(Beholder.Persistence.Provider.Implementation));
                 yield return new TestCaseData(typeof(Beholder.Snapshot.IProvider))

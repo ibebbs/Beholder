@@ -42,6 +42,9 @@ services:
       - azurite
     environment:
       - ASPNETCORE_URLS="http://0.0.0.0:9802"
+      - Director:ConnectionStrings:PostgreSQL=Host=postgresql;Database=postgres;Username=postgres;Password=P2ssw0rd
+      - Director:Blob:ConnectionString=AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
+      - Director:Blob:ContainerName=faces
 
   office-observer:
     image: ibebbs/beholder-observer
@@ -50,11 +53,9 @@ services:
       - azurite
       - director
     environment:
-      - Beholder:Service:Location=conservatory
+      - Beholder:Service:Location=office
       - Beholder:Face:Recognizer:ModelUri=http://azurite:10000/devstoreaccount1/model/Model.zip
       - Beholder:Snapshot:SnapshotUri=http://192.168.2.108/tmpfs/snap.jpg?usr=admin&pwd=admin
-      - Beholder:Persistence:BlobConnectionString=AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
-      - Beholder:Persistence:BlobContainer=devstoreaccount1/faces
       - Beholder:Persistence:DirectorEndpoint=http://director:9802
 
   conservatory-observer:
@@ -67,8 +68,6 @@ services:
       - Beholder:Service:Location=conservatory
       - Beholder:Face:Recognizer:ModelUri=http://azurite:10000/devstoreaccount1/model/Model.zip
       - Beholder:Snapshot:SnapshotUri=http://192.168.2.105/tmpfs/snap.jpg?usr=admin&pwd=admin
-      - Beholder:Persistence:BlobConnectionString=AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
-      - Beholder:Persistence:BlobContainer=devstoreaccount1/faces
       - Beholder:Persistence:DirectorEndpoint=http://director:9802
 
 volumes:

@@ -1,29 +1,40 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Beholder.Persistence.Provider
 {
     public class Implementation : IProvider
     {
-        private readonly Blob.IStore _blobStore;
-        private readonly Data.IStore _dataStore;
+        public Director.Client.IFacesClient _facesClient;
         private readonly ILogger<Implementation> _logger;
 
-        public Implementation(Blob.IStore blobStore, Data.IStore dataStore, ILogger<Implementation> logger)
+        public Implementation(Director.Client.IFacesClient facesClient, ILogger<Implementation> logger)
         {
-            _blobStore = blobStore;
-            _dataStore = dataStore;
+            _facesClient = facesClient;
             _logger = logger;
         }
 
-        public async Task<Uri> Save(IRecognition recognition)
+        public async Task<(Guid, Uri)> Save(IRecognition recognition)
         {
-            var uri = await _blobStore.SaveImage(recognition);
+            var id = Guid.NewGuid();
+            var fileName = "{id}.png";
 
-            await _dataStore.SaveRecognition(recognition, uri);
+            using (var stream = new MemoryStream(recognition.Data))
+            {
+                var face = await _facesClient.AddAsync(new Director.Client.FileParameter(stream, fileName), recognition.Meta.Location);
 
-            return uri;
+                var tag = recognition.Tags.OrderByDescending(tag => tag.Confidence).FirstOrDefault();
+
+                if (tag != null)
+                {
+                    var persisted = await _facesClient.AddRecognitionAsync(face.Id, Director.Client.Recognisers.MLNET, tag.Name, tag.Confidence);
+                }
+
+                return (face.Id, new Uri(face.Uri));
+            }
         }
     }
 }

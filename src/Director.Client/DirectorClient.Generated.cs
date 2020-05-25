@@ -25,11 +25,11 @@ namespace Director.Client
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, string location);
+        System.Threading.Tasks.Task<Face> AddAsync(FileParameter file, string location);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, string location, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<Face> AddAsync(FileParameter file, string location, System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<Face> GetFaceAsync(System.Guid id);
@@ -167,29 +167,37 @@ namespace Director.Client
         }
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, string location)
+        public System.Threading.Tasks.Task<Face> AddAsync(FileParameter file, string location)
         {
-            return AddAsync(uri, location, System.Threading.CancellationToken.None);
+            return AddAsync(file, location, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<Face> AddAsync(System.Uri uri, string location, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Face> AddAsync(FileParameter file, string location, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("api/faces");
+            urlBuilder_.Append("api/faces?");
+            urlBuilder_.Append(System.Uri.EscapeDataString("location") + "=").Append(System.Uri.EscapeDataString(location != null ? ConvertToString(location, System.Globalization.CultureInfo.InvariantCulture) : "")).Append("&");
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var keyValues_ = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, string>>();
-                    if (uri != null)
-                        keyValues_.Add(new System.Collections.Generic.KeyValuePair<string, string>("uri", ConvertToString(uri, System.Globalization.CultureInfo.InvariantCulture)));
-                    if (location != null)
-                        keyValues_.Add(new System.Collections.Generic.KeyValuePair<string, string>("location", ConvertToString(location, System.Globalization.CultureInfo.InvariantCulture)));
-                    request_.Content = new System.Net.Http.FormUrlEncodedContent(keyValues_);
+                    var boundary_ = System.Guid.NewGuid().ToString();
+                    var content_ = new System.Net.Http.MultipartFormDataContent(boundary_);
+                    content_.Headers.Remove("Content-Type");
+                    content_.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary_);
+                    if (file != null)
+                    {
+                        var content_file_ = new System.Net.Http.StreamContent(file.Data);
+                        if (!string.IsNullOrEmpty(file.ContentType))
+                            content_file_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse(file.ContentType);
+                        content_.Add(content_file_, "file", file.FileName ?? "file");
+                    }
+                    request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
@@ -1491,6 +1499,33 @@ namespace Director.Client
         public string Name { get; set; }
     
     
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.5.0.0 (NJsonSchema v10.1.15.0 (Newtonsoft.Json v12.0.0.0))")]
+    public partial class FileParameter
+    {
+        public FileParameter(System.IO.Stream data)
+            : this (data, null)
+        {
+        }
+
+        public FileParameter(System.IO.Stream data, string fileName)
+            : this (data, fileName, null)
+        {
+        }
+
+        public FileParameter(System.IO.Stream data, string fileName, string contentType)
+        {
+            Data = data;
+            FileName = fileName;
+            ContentType = contentType;
+        }
+
+        public System.IO.Stream Data { get; private set; }
+
+        public string FileName { get; private set; }
+
+        public string ContentType { get; private set; }
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.5.0.0 (NJsonSchema v10.1.15.0 (Newtonsoft.Json v12.0.0.0))")]

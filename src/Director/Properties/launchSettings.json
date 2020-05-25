@@ -22,6 +22,8 @@
       "launchUrl": "weatherforecast",
       "environmentVariables": {
         "Director:ConnectionStrings:PostgreSQL": "Host=127.0.0.1;Database=postgres;Username=postgres;Password=P2ssw0rd",
+        "Director:Blob:ConnectionString": "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://192.168.1.22:10000/devstoreaccount1;QueueEndpoint=http://192.168.1.22:10001/devstoreaccount1;TableEndpoint=http://192.168.1.22:10002/devstoreaccount1;",
+        "Director:Blob:ContainerName": "faces",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5000"

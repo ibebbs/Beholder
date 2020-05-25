@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +15,13 @@ namespace Director.Face
     public class Faces : ControllerBase
     {
         private readonly Data.IStore _dataStore;
+        private readonly Blob.IStore _blobStore;
         private readonly ILogger<Faces> _logger;
 
-        public Faces(Data.IStore dataStore, ILogger<Faces> logger)
+        public Faces(Data.IStore dataStore, Blob.IStore blobStore, ILogger<Faces> logger)
         {
             _dataStore = dataStore;
+            _blobStore = blobStore;
             _logger = logger;
         }
 
@@ -110,17 +114,21 @@ namespace Director.Face
         }
 
         [HttpPost()]
-        [Consumes("application/x-www-form-urlencoded")]
         [ProducesResponseType(201, Type = typeof(Data.Face))]
-        public async Task<IActionResult> Add([FromForm] Uri uri, [FromForm] string location)
+        public async Task<IActionResult> Add(IFormFile file, string location)
         {
-            var face = new Data.Face { Id = Guid.NewGuid(), Uri = uri.ToString(), Location = location, Created = DateTime.UtcNow };
-
             try
             {
-                var id = await _dataStore.AddAsync(face);
+                using (var stream = file.OpenReadStream())
+                {
+                    var uri = await _blobStore.SaveImage(stream);
 
-                return CreatedAtRoute(nameof(GetFace), new { id }, face);
+                    var face = new Data.Face { Id = Guid.NewGuid(), Uri = uri.ToString(), Location = location, Created = DateTime.UtcNow };
+
+                    var id = await _dataStore.AddAsync(face);
+
+                    return CreatedAtRoute(nameof(GetFace), new { id }, face);
+                }
             }
             catch (Exception e)
             {
