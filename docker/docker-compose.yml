@@ -24,19 +24,32 @@ services:
     build: postgresql/.
     environment:
       - POSTGRES_PASSWORD="P2ssw0rd"
+    volumes:
+      - type: volume
+        source: postgresql
+        target: /var/lib/postgresql/data
+        volume:
+          nocopy: true
+
+  director:
+    image: ibebbs/beholder-director
+    depends_on:
+      - postgresql
+      - azurite
 
   conservatory-observer:
     image: ibebbs/beholder-observer
     depends_on:
       - mqtt
       - azurite
+      - director
     environment:
       - Beholder:Service:Location=conservatory
       - Beholder:Face:Recognizer:ModelUri=http://azurite:10000/devstoreaccount1/model/Model.zip
       - Beholder:Snapshot:SnapshotUri=http://192.168.2.105/tmpfs/snap.jpg?usr=admin&pwd=admin
-      - Beholder:Persistence:ConnectionString=AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
-      - Beholder:Persistence:UnrecognisedFaceContainer=devstoreaccount1/unrecognised
-      - Beholder:Persistence:RecognisedFaceContainer=devstoreaccount1/recognised
+      - Beholder:Persistence:BlobConnectionString=AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1;
+      - Beholder:Persistence:BlobContainer=devstoreaccount1/faces
+      - Beholder:Persistence:DirectorEndpoint=http://director:9802
 
 volumes:
   azurite:
@@ -44,4 +57,9 @@ volumes:
       type: nfs
       o: "addr=192.168.1.11,nolock,soft,rw"
       device: ":/intelliHome/azurite"
+  postgresql:
+    driver_opts:
+      type: nfs
+      o: "addr=192.168.1.11,nolock,soft,rw"
+      device: ":/intelliHome/postgresql"
       
