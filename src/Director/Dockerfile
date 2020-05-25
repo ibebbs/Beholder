@@ -1,19 +1,19 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.0-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Director/Director.csproj", "Director/"]
 RUN dotnet restore "Director/Director.csproj"
 COPY . .
 WORKDIR "/src/Director"
-RUN dotnet build "Director.csproj" -c Release -o /app/build
+RUN dotnet build "Director.csproj" /p:NSwag=false -c Release -o /app/build 
 
 FROM build AS publish
-RUN dotnet publish "Director.csproj" -c Release -o /app/publish
+RUN dotnet publish "Director.csproj" /p:NSwag=false -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
