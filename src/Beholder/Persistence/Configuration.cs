@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Dynamic;
 
 namespace Beholder.Persistence
@@ -12,6 +13,6 @@ namespace Beholder.Persistence
         public string BlobContainer { get; set; } = "faces";
 
         [Required]
-        public string DirectorEndpoint { get; set; } = "http://localhost:5000";
+        public Uri DirectorEndpoint { get; set; } = new Uri("http://localhost:5000");
     }
 }

@@ -4,8 +4,9 @@
       "commandName": "Project",
       "environmentVariables": {
         "Beholder:Face:Recognizer:ModelUri": "http://192.168.1.24:10000/devstoreaccount1/model/Model.zip",
-        "Beholder:Snapshot:SnapshotUri": "http://192.168.2.105/tmpfs/snap.jpg?usr=admin&pwd=admin",
-        "Beholder:Persistence:ConnectionString": "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://192.168.1.24:10000/devstoreaccount1;QueueEndpoint=http://192.168.1.24:10001/devstoreaccount1;TableEndpoint=http://192.168.1.24:10002/devstoreaccount1;"
+        "Beholder:Snapshot:SnapshotUri": "http://192.168.2.108/tmpfs/snap.jpg?usr=admin&pwd=admin",
+        "Beholder:Persistence:DirectorEndpoint": "http://localhost:5000",
+        "Beholder:Persistence:BlobConnectionString": "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://192.168.1.22:10000/devstoreaccount1;QueueEndpoint=http://192.168.1.22:10001/devstoreaccount1;TableEndpoint=http://192.168.1.22:10002/devstoreaccount1;"
       }
     },
     "Docker": {

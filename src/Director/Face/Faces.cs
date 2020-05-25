@@ -73,7 +73,7 @@ namespace Director.Face
 
         [HttpPost("{faceId}/recognitions", Name = nameof(AddRecognition))]
         [Consumes("application/x-www-form-urlencoded")]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Recognition>))]
+        [ProducesResponseType(201, Type = typeof(Data.Recognition))]
         public async Task<IActionResult> AddRecognition([FromRoute] Guid faceId, [FromForm] Guid recogniserId, [FromForm] string label, [FromForm] float confidence)
         {
             var recognition = new Data.Recognition

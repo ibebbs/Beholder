@@ -16,11 +16,17 @@ namespace Director.Data
 
         Task<IReadOnlyCollection<Recogniser>> GetRecognisersAsync();
 
+        Task<IReadOnlyCollection<Recognition>> GetRecognitionsAsync();
+
+        Task<IReadOnlyCollection<Recognition>> GetRecognitionsAsync(string label);
+
         Task<IReadOnlyCollection<Recognition>> GetRecognitionsAsync(Guid faceId);
 
         Task<IEnumerable<Recognition>> GetRecognitionAsync(Guid faceId, Guid recognitionId);
 
         Task<Guid> AddAsync(Recognition recognition);
+
+        Task<IReadOnlyCollection<string>> GetLabelsAsync();
     }
 
     public class Store : IStore
@@ -60,6 +66,21 @@ namespace Director.Data
             return face.Id;
         }
 
+
+        public async Task<IReadOnlyCollection<Recognition>> GetRecognitionsAsync()
+        {
+            var result = await _database.FetchAsync<Recognition>().ConfigureAwait(false);
+
+            return result;
+        }
+        
+        public async Task<IReadOnlyCollection<Recognition>> GetRecognitionsAsync(string label)
+        {
+            var result = await _database.FetchAsync<Recognition>("WHERE label = @0", label).ConfigureAwait(false);
+
+            return result;
+        }
+
         public async Task<IReadOnlyCollection<Recognition>> GetRecognitionsAsync(Guid faceId)
         {
             var result = await _database.FetchAsync<Recognition>("WHERE face_id = @0", faceId).ConfigureAwait(false);
@@ -79,6 +100,13 @@ namespace Director.Data
             await _database.InsertAsync(recognition).ConfigureAwait(false);
 
             return recognition.Id;
+        }
+
+        public async Task<IReadOnlyCollection<string>> GetLabelsAsync()
+        {
+            var results = await _database.FetchAsync<string>("SELECT DISTINCT label FROM recognition").ConfigureAwait(false);
+
+            return results;
         }
     }
 }

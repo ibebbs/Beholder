@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ML;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -30,6 +31,14 @@ namespace Beholder
             {
                 services.AddPredictionEnginePool<Face.Recognizer.InputModel, Face.Recognizer.OutputModel>();
             }
+
+            services.AddHttpClient<Director.Client.IFacesClient, Director.Client.FacesClient>(
+                (serviceProvider, httpClient) => httpClient.BaseAddress = serviceProvider.GetRequiredService<IOptions<Persistence.Configuration>>().Value.DirectorEndpoint
+            );
+
+            services.AddHttpClient<Director.Client.IRecognisersClient, Director.Client.RecognisersClient>(
+                (serviceProvider, httpClient) => httpClient.BaseAddress = serviceProvider.GetRequiredService<IOptions<Persistence.Configuration>>().Value.DirectorEndpoint
+            );
 
             services.AddOptions<Face.Recognizer.Configuration>().ValidateDataAnnotations().Bind(hostContext.Configuration.GetSection("Face:Recognizer"));
             services.AddSingleton<Face.IRecognizer, Face.Recognizer.Implementation>();

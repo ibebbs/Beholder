@@ -31,4 +31,8 @@
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.11.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Director.Client\Director.Client.csproj" />
+  </ItemGroup>
+
 </Project>
