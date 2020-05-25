@@ -36,6 +36,8 @@ namespace Beholder
             services.AddOptions<Snapshot.Configuration>().ValidateDataAnnotations().Bind(hostContext.Configuration.GetSection("Snapshot"));
             services.AddSingleton<Face.IDetector, Face.Detector.Implementation>();
             services.AddOptions<Persistence.Configuration>().ValidateDataAnnotations().Bind(hostContext.Configuration.GetSection("Persistence"));
+            services.AddSingleton<Persistence.Blob.IStore, Persistence.Blob.Store>();
+            services.AddSingleton<Persistence.Data.IStore, Persistence.Data.Store>();
             services.AddSingleton<Persistence.IProvider, Persistence.Provider.Implementation>();
             services.AddHttpClient<Snapshot.IProvider, Snapshot.Provider.Implementation>();
             services.AddOptions<Service.Configuration>().ValidateDataAnnotations().Bind(hostContext.Configuration.GetSection("Service"));

@@ -21,8 +21,7 @@ namespace Beholder.Tests.Service.Pipeline.Functions
                 fake.Fetch,
                 fake.ExtractFaces,
                 fake.RecogniseFaces,
-                fake.PersistRecognised,
-                fake.PersistUnrecognised,
+                fake.PersistRecognition,
                 fake.NotifyRecognition
             );
 
@@ -52,27 +51,15 @@ namespace Beholder.Tests.Service.Pipeline.Functions
         }
 
         [Test]
-        public void InvokeThePersistRecognisedFunctionWhenPersistRecognisedIsCalled()
+        public void InvokeThePersistRecognitionFunctionWhenPersistRecognitionIsCalled()
         {
             (var fake, var subject) = CreateSubject();
 
-            var image = A.Fake<IImage>();
+            var recognition = A.Fake<IRecognition>();
 
-            subject.PersistRecognised("test", image);
+            subject.PersistRecognition(recognition);
 
-            A.CallTo(() => fake.PersistRecognised("test", image)).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
-        public void InvokeThePersistUnrecognisedFunctionWhenPersistUnrecognisedIsCalled()
-        {
-            (var fake, var subject) = CreateSubject();
-
-            var image = A.Fake<IImage>();
-
-            subject.PersistUnrecognised(image);
-
-            A.CallTo(() => fake.PersistUnrecognised(image)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fake.PersistRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
 
         [Test]

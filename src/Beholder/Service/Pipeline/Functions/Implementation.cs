@@ -12,22 +12,19 @@ namespace Beholder.Service.Pipeline.Functions
         private readonly Func<Task<IEnumerable<IImage>>> _fetch;
         private readonly Func<IImage, Task<IEnumerable<IImage>>> _extractFaces;
         private readonly Func<IImage, Task<IEnumerable<IRecognition>>> _recogniseFaces;
-        private readonly Func<string, IImage, Task<Uri>> _persistRecognised;
-        private readonly Func<IImage, Task<Uri>> _persistUnrecognised;
+        private readonly Func<IRecognition, Task<IPersistedRecognition>> _persistRecognition;
         private readonly Func<IPersisted, Task> _notifyPersisted;
 
         public Implementation(
             Func<Task<IEnumerable<IImage>>> fetch,
             Func<IImage, Task<IEnumerable<IImage>>> extractFaces,
             Func<IImage, Task<IEnumerable<IRecognition>>> recogniseFaces,
-            Func<string, IImage, Task<Uri>> persistRecognised,
-            Func<IImage, Task<Uri>> persistUnrecognised,
+            Func<IRecognition, Task<IPersistedRecognition>> persistRecognition,
             Func<IPersisted, Task> notifyPersisted)
         {
             _fetch = fetch;
             _extractFaces = extractFaces;
-            _persistRecognised = persistRecognised;
-            _persistUnrecognised = persistUnrecognised;
+            _persistRecognition = persistRecognition;
             _recogniseFaces = recogniseFaces;
             _notifyPersisted = notifyPersisted;
         }
@@ -47,14 +44,9 @@ namespace Beholder.Service.Pipeline.Functions
             return _recogniseFaces(image);
         }
 
-        public Task<Uri> PersistRecognised(string name, IImage image)
+        public Task<IPersistedRecognition> PersistRecognition(IRecognition recognition)
         {
-            return _persistRecognised(name, image);
-        }
-
-        public Task<Uri> PersistUnrecognised(IImage image)
-        {
-            return _persistUnrecognised(image);
+            return _persistRecognition(recognition);
         }
 
         public Task NotifyRecognition(IPersisted persisted)

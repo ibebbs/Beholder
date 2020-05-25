@@ -1,42 +1,50 @@
 ﻿using FakeItEasy;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NUnit.Framework;
+using System;
 using System.Threading.Tasks;
 
 namespace Beholder.Tests.Persistence.Provider
 {
-    [TestFixture, Category("Manual")]
+    [TestFixture]
     public class Should
     {
-        private static readonly Beholder.Persistence.Configuration Configuration = new Beholder.Persistence.Configuration
-        {
-            ConnectionString = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;",
-            UnrecognisedFaceContainer = "test"
-        };
 
-        private Beholder.Persistence.Provider.Implementation CreateSubject()
+        private (Beholder.Persistence.Blob.IStore, Beholder.Persistence.Data.IStore, Beholder.Persistence.Provider.Implementation) CreateSubject()
         {
-            var options = A.Fake<IOptions<Beholder.Persistence.Configuration>>(builder => builder.ConfigureFake(fake => A.CallTo(() => fake.Value).Returns(Configuration)));
+            var blobStore = A.Fake<Beholder.Persistence.Blob.IStore>();
+            var dataStore = A.Fake<Beholder.Persistence.Data.IStore>();
             var logger = A.Fake<ILogger<Beholder.Persistence.Provider.Implementation>>();
 
-            var subject = new Beholder.Persistence.Provider.Implementation(options, logger);
+            var subject = new Beholder.Persistence.Provider.Implementation(blobStore, dataStore, logger);
 
-            return subject;
+            return (blobStore, dataStore, subject);
         }
 
-        [Test, Ignore("Only to be run manually")]
-        public async Task PersistToConfiguredStore()
+        [Test]
+        public async Task UseBlobStoreToPersistImage()
         {
-            var subject = CreateSubject();
+            (var blobStore, var dataStore, var subject) = CreateSubject();
 
-            var recognition = A.Fake<IRecognition>(builder => builder
-                .ConfigureFake(fake => A.CallTo(() => fake.Data).ReturnsLazily(call => Helper.GetManifestResourceByteArray("Beholder.Tests.Face.Detector.faces.jpg"))
-            ));
+            var recognition = A.Fake<IRecognition>();
 
-            var uri = await subject.SaveRecognised("test", recognition);
+            await subject.Save(recognition);
 
-            Assert.That(uri.ToString(), Is.Not.Empty);
+            A.CallTo(() => blobStore.SaveImage(recognition)).MustHaveHappenedOnceExactly();
+        }
+
+        [Test]
+        public async Task UseDataStoreToPersistRecognition()
+        {
+            (var blobStore, var dataStore, var subject) = CreateSubject();
+
+            var uri = new Uri("http://blobstore.local/face.png");
+            var recognition = A.Fake<IRecognition>();
+            A.CallTo(() => blobStore.SaveImage(recognition)).Returns(uri);
+
+            await subject.Save(recognition);
+
+            A.CallTo(() => dataStore.SaveRecognition(recognition, uri)).MustHaveHappenedOnceExactly();
         }
     }
 }

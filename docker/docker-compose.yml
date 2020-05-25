@@ -20,6 +20,11 @@ services:
         volume:
           nocopy: true
 
+  postgresql:
+    build: postgresql/.
+    environment:
+      - POSTGRES_PASSWORD="P2ssw0rd"
+
   conservatory-observer:
     image: ibebbs/beholder-observer
     depends_on:

@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  beholder:
+    image: ${DOCKER_REGISTRY-}beholder
+    build:
+      context: .
+      dockerfile: Beholder/Dockerfile
+  director:
+    image: ${DOCKER_REGISTRY-}director
+    build:
+      context: .
+      dockerfile: Director/Dockerfile

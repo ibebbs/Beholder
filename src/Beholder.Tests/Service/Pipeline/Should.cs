@@ -106,12 +106,11 @@ namespace Beholder.Tests.Service.Pipeline
         }
 
         [Test]
-        public async Task PassTheResultOfRecogniseFacesToPersistRecognitisedWhenRecognised()
+        public async Task PassTheResultOfRecogniseFacesToPersistRecognition()
         {
             (var functions, var subject) = CreateSubject();
 
             var recognition = A.Fake<IRecognition>();
-            A.CallTo(() => recognition.Tags).Returns(new[] { new Tag("test", 0.9f) });
 
             A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
             A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
@@ -120,64 +119,25 @@ namespace Beholder.Tests.Service.Pipeline
             await subject.StartAsync(CancellationToken.None);
             await subject.WaitForCompletion();
 
-            A.CallTo(() => functions.PersistRecognised("test", recognition)).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
-        public async Task PassTheResultOfRecogniseFacesToPersistUnrecognitisedWhenNoRecognition()
-        {
-            (var functions, var subject) = CreateSubject();
-
-            var recognition = A.Fake<IRecognition>();
-            A.CallTo(() => recognition.Tags).Returns(Enumerable.Empty<Tag>());
-
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
-            A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
-            A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { recognition }.AsEnumerable()));
-
-            await subject.StartAsync(CancellationToken.None);
-            await subject.WaitForCompletion();
-
-            A.CallTo(() => functions.PersistUnrecognised(recognition)).MustHaveHappenedOnceExactly();
-        }
-
-        [Test]
-        public async Task PassTheResultOfRecogniseFacesToPersistUnrecognitisedWhenInsufficientRecognition()
-        {
-            (var functions, var subject) = CreateSubject();
-
-            var recognition = A.Fake<IRecognition>();
-            A.CallTo(() => recognition.Tags).Returns(new[] { new Tag("test", 0.2f) });
-
-            A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
-            A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
-            A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { recognition }.AsEnumerable()));
-
-            await subject.StartAsync(CancellationToken.None);
-            await subject.WaitForCompletion();
-
-            A.CallTo(() => functions.PersistUnrecognised(recognition)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => functions.PersistRecognition(recognition)).MustHaveHappenedOnceExactly();
         }
 
         [Test]
         public async Task PassTheResultOfPersistRecognitionToNotifyRecognition()
         {
-            const string imageUri = "http://test.local/image.png";
-
             (var functions, var subject) = CreateSubject();
 
-            var persisted = A.Fake<IPersisted>();
+            var persistedRecognition = A.Fake<IPersistedRecognition>();
 
             A.CallTo(() => functions.Fetch()).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
             A.CallTo(() => functions.ExtractFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IImage>() }.AsEnumerable()));
             A.CallTo(() => functions.RecogniseFaces(A<IImage>.Ignored)).Returns(Task.FromResult(new[] { A.Fake<IRecognition>() }.AsEnumerable()));
-            A.CallTo(() => functions.PersistRecognised(A<string>.Ignored, A<IImage>.Ignored)).Returns(new Uri(imageUri));
-            A.CallTo(() => functions.PersistUnrecognised(A<IImage>.Ignored)).Returns(Task.FromResult(new Uri(imageUri)));
+            A.CallTo(() => functions.PersistRecognition(A<IRecognition>.Ignored)).Returns(Task.FromResult(persistedRecognition));
 
             await subject.StartAsync(CancellationToken.None);
             await subject.WaitForCompletion();
 
-            A.CallTo(() => functions.NotifyRecognition(A<IPersisted>.That.Matches(persisted => persisted.ImageUri == imageUri))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => functions.NotifyRecognition(persistedRecognition)).MustHaveHappenedOnceExactly();
         }
     }
 }

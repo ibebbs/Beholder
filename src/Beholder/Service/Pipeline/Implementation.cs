@@ -33,24 +33,6 @@ namespace Beholder.Service.Pipeline
             (_entryPoint, _completion) = CreatePipeline();
         }
 
-        private async Task<IPersisted> PersisRecognition(IRecognition recognition)
-        {
-            var tag = recognition.Tags.OrderByDescending(tag => tag.Confidence).FirstOrDefault();
-
-            if (tag != null && tag.Confidence >= _options.Value.RecognitionConfidence)
-            {
-                var uri = await _functions.PersistRecognised(tag.Name, recognition);
-
-                return new PersistedRecognition(tag.Name, tag.Confidence, uri.ToString());
-            }
-            else
-            {
-                var uri = await _functions.PersistUnrecognised(recognition);
-
-                return new Persisted(uri.ToString());
-            }            
-        }
-
         private (ITargetBlock<string>, Task) CreatePipeline()
         {
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
@@ -58,8 +40,8 @@ namespace Beholder.Service.Pipeline
             TransformManyBlock<object, IImage> fetchBlock = new TransformManyBlock<object, IImage>(_ => _functions.Fetch(), new ExecutionDataflowBlockOptions { BoundedCapacity = 2, MaxDegreeOfParallelism = 1 });
             TransformManyBlock<IImage, IImage> detectFacesBlock = new TransformManyBlock<IImage, IImage>(source => _functions.ExtractFaces(source));
             TransformManyBlock<IImage, IRecognition> recogniseFacesBlock = new TransformManyBlock<IImage, IRecognition>(source => _functions.RecogniseFaces(source));
-            TransformBlock<IRecognition, IPersisted> persistRecognitionBlock = new TransformBlock<IRecognition, IPersisted>(recognition => PersisRecognition(recognition), new ExecutionDataflowBlockOptions { BoundedCapacity = 10, MaxDegreeOfParallelism = 1 });
-            ActionBlock<IPersisted> notifyRecognitionBlock = new ActionBlock<IPersisted>(recognition => _functions.NotifyRecognition(recognition), new ExecutionDataflowBlockOptions { BoundedCapacity = 10, MaxDegreeOfParallelism = 1 });
+            TransformBlock<IRecognition, IPersistedRecognition> persistRecognitionBlock = new TransformBlock<IRecognition, IPersistedRecognition>(recognition => _functions.PersistRecognition(recognition), new ExecutionDataflowBlockOptions { BoundedCapacity = 10, MaxDegreeOfParallelism = 1 });
+            ActionBlock<IPersistedRecognition> notifyRecognitionBlock = new ActionBlock<IPersistedRecognition>(recognition => _functions.NotifyRecognition(recognition), new ExecutionDataflowBlockOptions { BoundedCapacity = 10, MaxDegreeOfParallelism = 1 });
 
             fetchBlock.LinkTo(detectFacesBlock, linkOptions);
             detectFacesBlock.LinkTo(recogniseFacesBlock, linkOptions);

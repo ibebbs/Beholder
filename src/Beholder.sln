@@ -11,6 +11,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examiner", "Examiner\Examin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examiner.Tests", "Examiner.Tests\Examiner.Tests.csproj", "{26DA3B90-CC62-492B-B706-6AFF3D218EE1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Director", "Director\Director.csproj", "{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A5EF0747-A1CC-4999-9D3E-00293E99F975}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F80A5D50-5A55-4CC7-89C2-2DFF62B4AB5C}"
+	ProjectSection(SolutionItems) = preProject
+		..\docker\docker-compose.yml = ..\docker\docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "postgresql", "postgresql", "{34F7CA10-E75C-4678-9128-835996015D88}"
+	ProjectSection(SolutionItems) = preProject
+		..\docker\postgresql\createdb.sh = ..\docker\postgresql\createdb.sh
+		..\docker\postgresql\dockerfile = ..\docker\postgresql\dockerfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,9 +66,28 @@ Global
 		{26DA3B90-CC62-492B-B706-6AFF3D218EE1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{26DA3B90-CC62-492B-B706-6AFF3D218EE1}.Release|x64.ActiveCfg = Release|Any CPU
 		{26DA3B90-CC62-492B-B706-6AFF3D218EE1}.Release|x64.Build.0 = Release|Any CPU
+		{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}.Debug|x64.Build.0 = Debug|Any CPU
+		{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}.Release|x64.ActiveCfg = Release|Any CPU
+		{C4F53AE8-FFFE-4BFF-A2DD-02ECD1BE123B}.Release|x64.Build.0 = Release|Any CPU
+		{A5EF0747-A1CC-4999-9D3E-00293E99F975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5EF0747-A1CC-4999-9D3E-00293E99F975}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5EF0747-A1CC-4999-9D3E-00293E99F975}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A5EF0747-A1CC-4999-9D3E-00293E99F975}.Debug|x64.Build.0 = Debug|Any CPU
+		{A5EF0747-A1CC-4999-9D3E-00293E99F975}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5EF0747-A1CC-4999-9D3E-00293E99F975}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5EF0747-A1CC-4999-9D3E-00293E99F975}.Release|x64.ActiveCfg = Release|Any CPU
+		{A5EF0747-A1CC-4999-9D3E-00293E99F975}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{34F7CA10-E75C-4678-9128-835996015D88} = {F80A5D50-5A55-4CC7-89C2-2DFF62B4AB5C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {738A6A5E-3FBD-41EF-963B-C5F1A1ED81EE}

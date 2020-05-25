@@ -15,9 +15,7 @@ namespace Beholder.Service.Pipeline
 
         Task<IEnumerable<IRecognition>> RecogniseFaces(IImage image);
 
-        Task<Uri> PersistRecognised(string name, IImage image);
-
-        Task<Uri> PersistUnrecognised(IImage image);
+        Task<IPersistedRecognition> PersistRecognition(IRecognition recognition);
 
         Task NotifyRecognition(IPersisted recognition);
     }

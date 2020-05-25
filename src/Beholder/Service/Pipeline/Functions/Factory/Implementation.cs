@@ -49,14 +49,16 @@ namespace Beholder.Service.Pipeline.Functions.Factory
             return Task.FromResult<IEnumerable<IRecognition>>(new[] { recognition });
         }
 
-        private Task<Uri> PersistRecognised(string name, IImage recognition, ILogger logger)
+        private async Task<IPersistedRecognition> PersistRecognition(IRecognition recognition, ILogger logger)
         {
-            return _persistenceProvider.SaveRecognised(name, recognition);
-        }
+            var tag = recognition.Tags.OrderByDescending(tag => tag.Confidence).FirstOrDefault();
 
-        private Task<Uri> PersistUnrecognised(IImage image, ILogger logger)
-        {
-            return _persistenceProvider.SaveUnrecognised(image);
+            var name = tag?.Name;
+            var confidence = tag?.Confidence ?? 0f;
+
+            var uri = await _persistenceProvider.Save(recognition);
+
+            return new PersistedRecognition(name, confidence, uri.ToString());
         }
 
         public Task<IFunctions> Create(ILogger logger)
@@ -65,8 +67,7 @@ namespace Beholder.Service.Pipeline.Functions.Factory
                 () => Fetch(logger),
                 image => ExtractFaces(image, logger),
                 image => RecogniseFace(image, logger),
-                (name, image) => PersistRecognised(name, image, logger),
-                image => PersistUnrecognised(image, logger),
+                recognition => PersistRecognition(recognition, logger),
                 persistedRecognition => Task.CompletedTask);
 
             return Task.FromResult<IFunctions>(functions);
