@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
@@ -52,7 +53,10 @@ namespace Lensman
                         observer.OnCompleted();
                     };
 
-                    return observable.Subscribe(onNext, onError, onCompleted);
+                    return new CompositeDisposable(
+                        observable.Subscribe(onNext, onError, onCompleted),
+                        Disposable.Create(() => disposeAsync())
+                    );
                 });
         }
     }

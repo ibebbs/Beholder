@@ -1,0 +1,66 @@
+﻿<Page
+    x:Class="Lensman.Recognising.View"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Lensman.Platform"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Grid.Column="1" Command="{Binding Path=Ian}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFffa600" Grid.ColumnSpan="4" AllowDrop="True" Margin="10">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="ms-appx:///Assets/Ian.jpg" Margin="20" />
+                    <TextBlock Text="Dad" VerticalAlignment="Center" FontSize="96" Margin="10"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Row="1" Grid.Column="1" Command="{Binding Path=Rachel}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Background="#FF69D2E7" Grid.ColumnSpan="4" AllowDrop="True" Margin="10">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="ms-appx:///Assets/Rachel.jpg" Margin="20"/>
+                    <TextBlock Text="Mum" VerticalAlignment="Center" FontSize="96" Margin="10"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Row="2" Grid.Column="1" Command="{Binding Path=Mia}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Background="#FFAAC840" Grid.ColumnSpan="3" AllowDrop="True" Margin="10">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="ms-appx:///Assets/Mia.jpg" Margin="20"/>
+                    <TextBlock Text="Mia" VerticalAlignment="Center" FontSize="96" Margin="10"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Row="3" Grid.Column="1" Command="{Binding Path=Max}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Background="#FF3DD7BB" Grid.ColumnSpan="3" AllowDrop="True" Margin="10">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="ms-appx:///Assets/Max.jpg" Margin="20"/>
+                    <TextBlock Text="Max" VerticalAlignment="Center" FontSize="96" Margin="10"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Row="4" Grid.Column="1" Command="{Binding Path=Alan}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Background="#FFd4ba14" Grid.ColumnSpan="4" AllowDrop="True" Margin="10">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="ms-appx:///Assets/Alan.jpg" Margin="20"/>
+                    <TextBlock Text="Grandad" VerticalAlignment="Center" FontSize="96" Margin="10"/>
+                </StackPanel>
+            </Button>
+            <Button Grid.Row="5" Grid.Column="1" Command="{Binding Path=NotAFace}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Background="#FF5ad596" Grid.ColumnSpan="4" AllowDrop="True" Margin="10">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Not A Face" VerticalAlignment="Center" FontSize="96" Margin="10"/>
+                </StackPanel>
+            </Button>
+            <TextBlock Text="Who is this?" Grid.Row="1" FontSize="48" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+            <Border Grid.Row="2" Grid.Column="0">
+                <Image Source="{Binding Path=Face.Uri, Mode=OneWay}" Margin="20"/>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

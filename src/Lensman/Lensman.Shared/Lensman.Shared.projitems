@@ -18,17 +18,55 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Face.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FaceProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Identification.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Transition\ToRecognising.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\Event\SelectedUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\IState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Factory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Initializing.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\ITransition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Launching.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Provider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Event\Bus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\State.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Machine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Resuming.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platform\Schedulers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Recognising\View.xaml.cs">
+      <DependentUpon>View.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Recognising\ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Recognising\State.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Running\State.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Transition\ToInitializing.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Transition\ToLaunching.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Transition\ToLogin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Transition\ToResuming.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Application\State\Transition\ToRunning.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Login\View.xaml.cs">
+      <DependentUpon>View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Login\ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Navigation\Service.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ObservableExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platform\Services.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Running\View.xaml.cs">
+      <DependentUpon>View.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Running\ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)User\Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewLocator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="$(MSBuildThisFileDirectory)MainPage.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)Login\View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Recognising\View.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Running\View.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -44,5 +82,10 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en\Resources.resw" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Application\Event\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Login\Event\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Navigation\" />
   </ItemGroup>
 </Project>

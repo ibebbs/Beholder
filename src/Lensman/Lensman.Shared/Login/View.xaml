@@ -1,0 +1,47 @@
+﻿<Page
+    x:Class="Lensman.Login.View"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Lensman.Login"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="0.5*"/>
+            </Grid.RowDefinitions>
+            <Button Grid.Column="0" Grid.Row="0" Command="{Binding Ian}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF8A9B0F" Padding="20">
+                <StackPanel Orientation="Vertical">
+                    <Image Source="ms-appx:///Assets/Ian.jpg" Width="80" Margin="4" />
+                    <TextBlock Text="Ian" HorizontalAlignment="Center" Margin="4" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1" Grid.Row="0" Command="{Binding Rachel}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFE97F02" Padding="20">
+                <StackPanel Orientation="Vertical">
+                    <Image Source="ms-appx:///Assets/Rachel.jpg" Width="80" Margin="4" />
+                    <TextBlock Text="Rachel" HorizontalAlignment="Center" Margin="4" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="0" Grid.Row="1" Command="{Binding Mia}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFBD1550" Padding="20">
+                <StackPanel Orientation="Vertical">
+                    <Image Source="ms-appx:///Assets/Mia.jpg" Width="80" Margin="4" />
+                    <TextBlock Text="Mia" HorizontalAlignment="Center" Margin="4" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1" Grid.Row="1" Command="{Binding Max}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FFF8CA00" Padding="20">
+                <StackPanel Orientation="Vertical">
+                    <Image Source="ms-appx:///Assets/Max.jpg" Width="80" Margin="4" />
+                    <TextBlock Text="Max" HorizontalAlignment="Center" Margin="4" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</Page>
