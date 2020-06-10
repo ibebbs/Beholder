@@ -18,11 +18,11 @@ namespace Director.Client
     public partial interface IFacesClient
     {
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync();
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync(long? pageNumber, long? itemsPerPage);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync(long? pageNumber, long? itemsPerPage, System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<Face> AddAsync(FileParameter file, string location);
@@ -39,18 +39,25 @@ namespace Director.Client
         System.Threading.Tasks.Task<Face> GetFaceAsync(System.Guid id, System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAsync();
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAsync(long? pageNumber, long? itemsPerPage);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAsync(long? pageNumber, long? itemsPerPage, System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAtConfidenceAsync(float confidence);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAtConfidenceAsync(float confidence, long? pageNumber, long? itemsPerPage);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAtConfidenceAsync(float confidence, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAtConfidenceAsync(float confidence, long? pageNumber, long? itemsPerPage, System.Threading.CancellationToken cancellationToken);
+    
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedByAsync(System.Guid recogniser, long? pageNumber, long? itemsPerPage);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedByAsync(System.Guid recogniser, long? pageNumber, long? itemsPerPage, System.Threading.CancellationToken cancellationToken);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Recognition>> GetRecognitionsAsync(System.Guid id);
@@ -102,17 +109,26 @@ namespace Director.Client
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync(long? pageNumber, long? itemsPerPage)
         {
-            return GetAllAsync(System.Threading.CancellationToken.None);
+            return GetAllAsync(pageNumber, itemsPerPage, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetAllAsync(long? pageNumber, long? itemsPerPage, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("api/faces");
+            urlBuilder_.Append("api/faces?");
+            if (pageNumber != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("PageNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(pageNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (itemsPerPage != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("ItemsPerPage") + "=").Append(System.Uri.EscapeDataString(ConvertToString(itemsPerPage, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             try
@@ -315,17 +331,26 @@ namespace Director.Client
         }
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAsync(long? pageNumber, long? itemsPerPage)
         {
-            return GetUnrecognisedAsync(System.Threading.CancellationToken.None);
+            return GetUnrecognisedAsync(pageNumber, itemsPerPage, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAsync(long? pageNumber, long? itemsPerPage, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("api/faces/unrecognised");
+            urlBuilder_.Append("api/faces/unrecognised?");
+            if (pageNumber != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("PageNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(pageNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (itemsPerPage != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("ItemsPerPage") + "=").Append(System.Uri.EscapeDataString(ConvertToString(itemsPerPage, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             try
@@ -380,21 +405,108 @@ namespace Director.Client
         }
     
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAtConfidenceAsync(float confidence)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAtConfidenceAsync(float confidence, long? pageNumber, long? itemsPerPage)
         {
-            return GetUnrecognisedAtConfidenceAsync(confidence, System.Threading.CancellationToken.None);
+            return GetUnrecognisedAtConfidenceAsync(confidence, pageNumber, itemsPerPage, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAtConfidenceAsync(float confidence, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedAtConfidenceAsync(float confidence, long? pageNumber, long? itemsPerPage, System.Threading.CancellationToken cancellationToken)
         {
             if (confidence == null)
                 throw new System.ArgumentNullException("confidence");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append("api/faces/unrecognised/{confidence}");
+            urlBuilder_.Append("api/faces/unrecognised/at/{confidence}?");
             urlBuilder_.Replace("{confidence}", System.Uri.EscapeDataString(ConvertToString(confidence, System.Globalization.CultureInfo.InvariantCulture)));
+            if (pageNumber != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("PageNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(pageNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (itemsPerPage != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("ItemsPerPage") + "=").Append(System.Uri.EscapeDataString(ConvertToString(itemsPerPage, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Face>>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(System.Collections.Generic.ICollection<Face>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedByAsync(System.Guid recogniser, long? pageNumber, long? itemsPerPage)
+        {
+            return GetUnrecognisedByAsync(recogniser, pageNumber, itemsPerPage, System.Threading.CancellationToken.None);
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Face>> GetUnrecognisedByAsync(System.Guid recogniser, long? pageNumber, long? itemsPerPage, System.Threading.CancellationToken cancellationToken)
+        {
+            if (recogniser == null)
+                throw new System.ArgumentNullException("recogniser");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append("api/faces/unrecognised/by/{recogniser}?");
+            urlBuilder_.Replace("{recogniser}", System.Uri.EscapeDataString(ConvertToString(recogniser, System.Globalization.CultureInfo.InvariantCulture)));
+            if (pageNumber != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("PageNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(pageNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (itemsPerPage != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("ItemsPerPage") + "=").Append(System.Uri.EscapeDataString(ConvertToString(itemsPerPage, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             try

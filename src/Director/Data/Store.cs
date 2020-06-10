@@ -8,17 +8,17 @@ namespace Director.Data
 {
     public interface IStore
     {
-        Task<IReadOnlyCollection<Face>> GetFacesAsync();
+        Task<IReadOnlyCollection<Face>> GetFacesAsync(long? pageNumber, long? itemsPerPage);
 
         Task<IEnumerable<Face>> GetFaceAsync(Guid id);
 
         Task<Guid> AddAsync(Face face);
 
-        Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync();
+        Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(long? pageNumber, long? itemsPerPage);
 
-        Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(float confidence);
+        Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(float confidence, long? pageNumber, long? itemsPerPage);
 
-        Task<IReadOnlyCollection<Face>> GetUnrecognisedByAsync(Guid recogniser);
+        Task<IReadOnlyCollection<Face>> GetUnrecognisedByAsync(Guid recogniser, long? pageNumber, long? itemsPerPage);
 
         Task<IReadOnlyCollection<Recogniser>> GetRecognisersAsync();
 
@@ -44,30 +44,49 @@ namespace Director.Data
             _database = database;
         }
 
-        public async Task<IReadOnlyCollection<Face>> GetFacesAsync()
+        public async Task<IReadOnlyCollection<Face>> GetFacesAsync(long? pageNumber, long? itemsPerPage)
         {
-            var result = await _database.FetchAsync<Face>().ConfigureAwait(false);
+            var result = await _database.FetchAsync<Face>(pageNumber ?? Default.Page, itemsPerPage ?? Default.ItemsPerPage).ConfigureAwait(false);
 
             return result;
         }
         
-        public async Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync()
+        public async Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(long? pageNumber, long? itemsPerPage)
         {
-            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.location, f.created FROM faces f LEFT OUTER JOIN recognition r ON r.face_id = f.id WHERE r.id IS NULL").ConfigureAwait(false);
+            var sql = Sql.Builder
+                .Select("f.id", "f.uri", "f.location", "f.created")
+                .From("faces as f")
+                .LeftJoin("recognition as r").On("r.face_id = f.id WHERE r.id IS NULL");
+
+            var result = await _database.FetchAsync<Face>(pageNumber ?? Default.Page, itemsPerPage ?? Default.ItemsPerPage, sql).ConfigureAwait(false);
 
             return result;
         }
         
-        public async Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(float confidence)
+        public async Task<IReadOnlyCollection<Face>> GetUnrecognisedAsync(float confidence, long? pageNumber, long? itemsPerPage)
         {
-            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.location, f.created FROM faces f WHERE NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.confidence > @0)", confidence).ConfigureAwait(false);
+            var sql = Sql.Builder
+                .Select("f.id", "f.uri", "f.location", "f.created")
+                .From("faces as f")
+                .Where("NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.confidence > @0)");
+
+            sql.Arguments[0] = confidence;
+
+            var result = await _database.FetchAsync<Face>(pageNumber ?? Default.Page, itemsPerPage ?? Default.ItemsPerPage, sql).ConfigureAwait(false);
 
             return result;
         }
 
-        public async Task<IReadOnlyCollection<Face>> GetUnrecognisedByAsync(Guid recogniser)
+        public async Task<IReadOnlyCollection<Face>> GetUnrecognisedByAsync(Guid recogniser, long? pageNumber, long? itemsPerPage)
         {
-            var result = await _database.FetchAsync<Face>("SELECT f.id, f.uri, f.location, f.created FROM faces f WHERE NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.recogniser_id = @0)", recogniser).ConfigureAwait(false);
+            var sql = Sql.Builder
+                .Select("f.id", "f.uri", "f.location", "f.created")
+                .From("faces as f")
+                .Where("NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.recogniser_id = @0)");
+
+            sql.Arguments[0] = recogniser;
+
+            var result = await _database.FetchAsync<Face>(pageNumber ?? Default.Page, itemsPerPage ?? Default.ItemsPerPage, sql).ConfigureAwait(false);
 
             return result;
         }

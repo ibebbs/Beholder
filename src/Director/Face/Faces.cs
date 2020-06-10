@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Director.Face
@@ -27,9 +28,9 @@ namespace Director.Face
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Face>))]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] Options options)
         {
-            var faces = await _dataStore.GetFacesAsync();
+            var faces = await _dataStore.GetFacesAsync(options.PageNumber, options.ItemsPerPage);
 
             return Ok(faces);
         }
@@ -52,27 +53,27 @@ namespace Director.Face
 
         [HttpGet("unrecognised", Name = nameof(GetUnrecognised))]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Face>))]
-        public async Task<IActionResult> GetUnrecognised()
+        public async Task<IActionResult> GetUnrecognised([FromQuery] Options options)
         {
-            var faces = await _dataStore.GetUnrecognisedAsync();
+            var faces = await _dataStore.GetUnrecognisedAsync(options.PageNumber, options.ItemsPerPage);
 
             return Ok(faces);
         }
 
         [HttpGet("unrecognised/at/{confidence}", Name = nameof(GetUnrecognisedAtConfidence))]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Face>))]
-        public async Task<IActionResult> GetUnrecognisedAtConfidence(float confidence)
+        public async Task<IActionResult> GetUnrecognisedAtConfidence([FromRoute] float confidence, [FromQuery] Options options)
         {
-            var faces = await _dataStore.GetUnrecognisedAsync(confidence);
+            var faces = await _dataStore.GetUnrecognisedAsync(confidence, options.PageNumber, options.ItemsPerPage);
 
             return Ok(faces);
         }
 
         [HttpGet("unrecognised/by/{recogniser}", Name = nameof(GetUnrecognisedBy))]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Data.Face>))]
-        public async Task<IActionResult> GetUnrecognisedBy([FromRoute] Guid recogniser)
+        public async Task<IActionResult> GetUnrecognisedBy([FromRoute] Guid recogniser, [FromQuery] Options options)
         {
-            var faces = await _dataStore.GetUnrecognisedByAsync(recogniser);
+            var faces = await _dataStore.GetUnrecognisedByAsync(recogniser, options.PageNumber, options.ItemsPerPage);
 
             return Ok(faces);
         }
