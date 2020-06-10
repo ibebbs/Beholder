@@ -68,9 +68,7 @@ namespace Director.Data
             var sql = Sql.Builder
                 .Select("f.id", "f.uri", "f.location", "f.created")
                 .From("faces as f")
-                .Where("NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.confidence > @0)");
-
-            sql.Arguments[0] = confidence;
+                .Where("NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.confidence > @0)", confidence);
 
             var result = await _database.FetchAsync<Face>(pageNumber ?? Default.Page, itemsPerPage ?? Default.ItemsPerPage, sql).ConfigureAwait(false);
 
@@ -82,9 +80,7 @@ namespace Director.Data
             var sql = Sql.Builder
                 .Select("f.id", "f.uri", "f.location", "f.created")
                 .From("faces as f")
-                .Where("NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.recogniser_id = @0)");
-
-            sql.Arguments[0] = recogniser;
+                .Where("NOT EXISTS (SELECT 1 FROM recognition r WHERE r.face_id = f.id AND r.recogniser_id = @0)", recogniser);
 
             var result = await _database.FetchAsync<Face>(pageNumber ?? Default.Page, itemsPerPage ?? Default.ItemsPerPage, sql).ConfigureAwait(false);
 

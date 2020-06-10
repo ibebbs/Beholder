@@ -1,18 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Npgsql;
 using PetaPoco;
+using System.Data;
 
 namespace Director
 {
@@ -40,6 +33,8 @@ namespace Director
             services.AddOptions<Blob.Configuration>().ValidateDataAnnotations().Bind(Configuration.GetSection("Blob"));
             services.AddTransient<Blob.IStore, Blob.Store>();
 
+            services.AddOptions<Face.Configuration>().ValidateDataAnnotations().Bind(Configuration.GetSection("Face"));
+            services.AddSingleton<Face.IMapper, Face.Mapper>();
             services.AddTransient<IDbConnection>(sp => new NpgsqlConnection());
             services.AddTransient<IDatabase>(sp => sp.GetService<IDatabaseBuildConfiguration>().Create());
             services.AddTransient<Data.IStore, Data.Store>();

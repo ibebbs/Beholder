@@ -17,12 +17,14 @@ namespace Director.Face
     {
         private readonly Data.IStore _dataStore;
         private readonly Blob.IStore _blobStore;
+        private readonly IMapper _mapper;
         private readonly ILogger<Faces> _logger;
 
-        public Faces(Data.IStore dataStore, Blob.IStore blobStore, ILogger<Faces> logger)
+        public Faces(Data.IStore dataStore, Blob.IStore blobStore, IMapper mapper, ILogger<Faces> logger)
         {
             _dataStore = dataStore;
             _blobStore = blobStore;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -43,7 +45,7 @@ namespace Director.Face
 
             if (faces.Any())
             {
-                return Ok(faces.First());
+                return Ok(faces.Select(face => _mapper.Map(face, Request)).First());
             }
             else
             {
@@ -57,7 +59,7 @@ namespace Director.Face
         {
             var faces = await _dataStore.GetUnrecognisedAsync(options.PageNumber, options.ItemsPerPage);
 
-            return Ok(faces);
+            return Ok(faces.Select(face => _mapper.Map(face, Request)));
         }
 
         [HttpGet("unrecognised/at/{confidence}", Name = nameof(GetUnrecognisedAtConfidence))]
@@ -66,7 +68,7 @@ namespace Director.Face
         {
             var faces = await _dataStore.GetUnrecognisedAsync(confidence, options.PageNumber, options.ItemsPerPage);
 
-            return Ok(faces);
+            return Ok(faces.Select(face => _mapper.Map(face, Request)));
         }
 
         [HttpGet("unrecognised/by/{recogniser}", Name = nameof(GetUnrecognisedBy))]
@@ -75,7 +77,7 @@ namespace Director.Face
         {
             var faces = await _dataStore.GetUnrecognisedByAsync(recogniser, options.PageNumber, options.ItemsPerPage);
 
-            return Ok(faces);
+            return Ok(faces.Select(face => _mapper.Map(face, Request)));
         }
 
         [HttpGet("{id}/recognitions", Name = nameof(GetRecognitions))]
