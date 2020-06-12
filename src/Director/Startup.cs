@@ -37,7 +37,17 @@ namespace Director
             services.AddSingleton<Face.IMapper, Face.Mapper>();
             services.AddTransient<IDbConnection>(sp => new NpgsqlConnection());
             services.AddTransient<IDatabase>(sp => sp.GetService<IDatabaseBuildConfiguration>().Create());
-            services.AddTransient<Data.IStore, Data.Store>();
+            services.AddTransient<Data.IStore, Data.Store>(); 
+            
+            services.AddCors(o => o.AddPolicy(
+                "CorsPolicy", 
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                })
+            );
 
             services.AddControllers();
 
@@ -51,6 +61,8 @@ namespace Director
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
 
