@@ -30,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Login\State.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Application\State\Machine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Application\State\Resuming.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platform\CustomHttpClientFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platform\Schedulers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Recognising\View.xaml.cs">
       <DependentUpon>View.xaml</DependentUpon>

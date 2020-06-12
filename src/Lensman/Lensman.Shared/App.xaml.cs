@@ -13,6 +13,7 @@ namespace Lensman
     sealed partial class App : Windows.UI.Xaml.Application
     {
         private IDisposable _app;
+        private readonly ILogger<App> _logger;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -22,9 +23,12 @@ namespace Lensman
         {
             ConfigureFilters(global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory);
 
+            _logger = global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory.CreateLogger<App>();
+
             this.InitializeComponent();
             this.Suspending += OnSuspending;
 
+            _logger.LogInformation("Performing registration");
             Platform.Services.Service.PerformRegistration();
         }
 
@@ -44,6 +48,8 @@ namespace Lensman
 
             if (_app == null)
             {
+                _logger.LogInformation("Starting app state machine");
+
                 _app = Platform.Services.Service.Provider.GetService<Application.State.IMachine>().Start();
             }
         }
@@ -69,7 +75,6 @@ namespace Lensman
         /// <param name="factory"></param>
         static void ConfigureFilters(ILoggerFactory factory)
         {
-            /*
             factory
                 .WithFilter(new FilterLoggerSettings
                     {
@@ -115,7 +120,6 @@ namespace Lensman
 #else
                 .AddConsole(LogLevel.Information);
 #endif
-            */
         }
     }
 }

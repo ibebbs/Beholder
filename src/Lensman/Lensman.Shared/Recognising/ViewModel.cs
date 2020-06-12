@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive;
@@ -20,6 +21,8 @@ namespace Lensman.Recognising
         private readonly BehaviorSubject<Director.Client.Recognition> _recognised;
         private readonly MVx.Observable.Property<Director.Client.Face> _face;
 
+        private readonly ILogger<ViewModel> _logger;
+
         private readonly MVx.Observable.Command _ian;
         private readonly MVx.Observable.Command _rachel;
         private readonly MVx.Observable.Command _mia;
@@ -35,6 +38,8 @@ namespace Lensman.Recognising
             _eventBus = eventBus;
             _userId = userId;
             _schedulers = schedulers;
+
+            _logger = global::Uno.Extensions.LogExtensionPoint.AmbientLoggerFactory.CreateLogger<ViewModel>();
 
             _recognised = new BehaviorSubject<Director.Client.Recognition>(null);
             _face = new MVx.Observable.Property<Director.Client.Face>(nameof(Face), args => PropertyChanged?.Invoke(this, args));
@@ -56,13 +61,19 @@ namespace Lensman.Recognising
 
         private IDisposable ShouldRetrieveFaceWhenActivatedAndAfterRecognition()
         {
-            return ObservableExtensions
-                .UsingAsync(
-                    () => _dataProvider.UnrecognisedBy(_userId, page => 1).GetAsyncEnumerator(),
-                    enumerator => _recognised
-                        .SelectMany(_ => GetFaceAsync(enumerator))
-                        .TakeWhile(tuple => tuple.Item1)
-                        .Select(tuple => tuple.Item2))
+            //return ObservableExtensions
+            //    .UsingAsync(
+            //        () => _dataProvider.UnrecognisedBy(_userId, page => 1).GetAsyncEnumerator(),
+            //        enumerator => _recognised
+            //            .SelectMany(_ => GetFaceAsync(enumerator))
+            //            .TakeWhile(tuple => tuple.Item1)
+            //            .Select(tuple => tuple.Item2))
+            //    .ObserveOn(_schedulers.Dispatcher)
+            //    .Subscribe(_face);
+
+            return _recognised
+                .SelectMany(_ => _dataProvider.UnrecognisedBy(_userId))
+                .Do(face => _logger.LogInformation($"Unrecognised: {face.Id} @ {face.Uri}"))
                 .ObserveOn(_schedulers.Dispatcher)
                 .Subscribe(_face);
         }

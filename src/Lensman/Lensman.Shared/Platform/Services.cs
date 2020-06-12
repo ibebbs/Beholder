@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 
 namespace Lensman.Platform
@@ -22,8 +23,10 @@ namespace Lensman.Platform
         {
             services.AddSingleton<IViewLocator, ViewLocator>();
 
+            services.AddSingleton<System.Net.Http.IHttpClientFactory, CustomHttpClientFactory>();
+
             services.AddHttpClient<Director.Client.IFacesClient, Director.Client.FacesClient>(
-                (serviceProvider, httpClient) => httpClient.BaseAddress = new Uri("http://localhost:5000")
+                serviceProvider => new HttpClient(CustomHttpClientFactory.Handler) { BaseAddress = new Uri("http://localhost:5000") }
             );
 
             services.AddSingleton<Data.IProvider, Data.Provider>();

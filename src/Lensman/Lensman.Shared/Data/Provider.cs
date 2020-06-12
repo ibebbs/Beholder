@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Lensman.Data
@@ -7,6 +8,8 @@ namespace Lensman.Data
     public interface IProvider
     {
         IAsyncEnumerable<Director.Client.Face> UnrecognisedBy(Guid userId, Func<long, long> incrementPage = null);
+
+        Task<Director.Client.Face> UnrecognisedBy(Guid userId);
 
         Task<Director.Client.Recognition> Recognise(Guid faceId, Guid recogniserId, string label, float confidence);
     }
@@ -45,6 +48,12 @@ namespace Lensman.Data
             } while (resultCount == ItemsPerPage);
         }
 
+        public async Task<Director.Client.Face> UnrecognisedBy(Guid userId)
+        {
+            var results = await _client.GetUnrecognisedByAsync(userId, 1, 1).ConfigureAwait(false);
+
+            return results.FirstOrDefault();
+        }
 
         public async Task<Director.Client.Recognition> Recognise(Guid faceId, Guid recogniserId, string label, float confidence)
         {
