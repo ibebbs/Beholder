@@ -19,15 +19,27 @@ namespace Lensman.Platform
             _serviceProvider = new Lazy<IServiceProvider>(() => _serviceCollection.BuildServiceProvider());
         }
 
+        partial void GetHttpMessageHandler(ref HttpMessageHandler handler);
+
+        private HttpMessageHandler PrimaryHttpMessageHandler()
+        {
+            HttpMessageHandler handler = null;
+
+            GetHttpMessageHandler(ref handler);
+
+            handler ??= new HttpClientHandler();
+
+            return handler;
+        }
+
         private void RegisterGlobalServices(IServiceCollection services)
         {
             services.AddSingleton<IViewLocator, ViewLocator>();
 
-            services.AddSingleton<System.Net.Http.IHttpClientFactory, CustomHttpClientFactory>();
-
-            services.AddHttpClient<Director.Client.IFacesClient, Director.Client.FacesClient>(
-                serviceProvider => new HttpClient(CustomHttpClientFactory.Handler) { BaseAddress = new Uri("http://localhost:5000") }
-            );
+            services
+                .AddHttpClient<Director.Client.IFacesClient, Director.Client.FacesClient>(
+                    httpClient => httpClient.BaseAddress = new Uri("http://localhost:5000"))
+                .ConfigurePrimaryHttpMessageHandler(PrimaryHttpMessageHandler);
 
             services.AddSingleton<Data.IProvider, Data.Provider>();
             services.AddSingleton<Event.IBus, Event.Bus>();
