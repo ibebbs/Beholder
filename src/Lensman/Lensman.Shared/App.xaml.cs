@@ -30,6 +30,7 @@ namespace Lensman
 
             _logger.LogInformation("Performing registration");
             Platform.Services.Service.PerformRegistration();
+            _logger.LogInformation("Registration complete");
         }
 
         /// <summary>

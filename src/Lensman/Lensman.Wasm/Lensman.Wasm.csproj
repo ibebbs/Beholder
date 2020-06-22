@@ -45,8 +45,8 @@
     <PackageReference Include="MVx.Observable" Version="2.0.0" />
     <PackageReference Include="Uno.UI" Version="2.2.0" />
     <PackageReference Include="Uno.UI.RemoteControl" Version="2.2.0" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="Uno.Wasm.Bootstrap" Version="1.2.0-dev.18" />
-    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="1.2.0-dev.18" />
+    <PackageReference Include="Uno.Wasm.Bootstrap" Version="1.2.0" />
+    <PackageReference Include="Uno.Wasm.Bootstrap.DevServer" Version="1.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Director.Client\Director.Client.csproj" />
